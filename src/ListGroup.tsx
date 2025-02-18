@@ -1,11 +1,12 @@
 import { useState,FC } from 'react';
-
+import ListGroupStyle from "./ListGroup.module.css"
 interface ListGroupProps {
   title: string,
   items: string[]
+  onItemSelected: (index: number) => void
 }
 
-const ListGroup: FC<ListGroupProps> = ({title,items}) =>{
+const ListGroup: FC<ListGroupProps> = ({title,items, onItemSelected}) =>{
 
   const [selectedIndex,setSelectedIndex] = useState(0);
   const [render,setRender] = useState(1);
@@ -22,8 +23,11 @@ const ListGroup: FC<ListGroupProps> = ({title,items}) =>{
     setRender(render+1);
   }
 
+  const onSelect = () => {
+    onItemSelected(selectedIndex);
+  }
   return (
-    <div>
+    <div className={ListGroupStyle.container}>
       <h1>{title}</h1>
         { items.length === 0 ? <p>No items</p> :
         <ul className="list-group">
@@ -37,8 +41,10 @@ const ListGroup: FC<ListGroupProps> = ({title,items}) =>{
               )}
         </ul>
         }
-        <button onClick={addItem}>Add item</button>
+        <button className='btn btn-primary m-3' onClick={addItem}>Add item</button>
+        <button className='btn btn-danger' onClick={onSelect}>Select</button>
    </div>
+   
   );
 }
 
