@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import postService, { CanceledError } from '../Services/post-service';
-import { Post } from '../Services/post-service';
+import postService, { CanceledError } from '../Services/post_service';
+import { Post } from '../Services/post_service';
 
 const usePosts = () => {
       const [posts, setPosts] = useState<Post[]>([]);
