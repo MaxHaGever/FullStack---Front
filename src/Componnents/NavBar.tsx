@@ -22,23 +22,52 @@ const Navbar: React.FC<NavbarProps> = ({ isLoggedIn, setIsLoggedIn, username }) 
   };
 
   return (
-    <nav className="navbar navbar-expand-lg bg-dark">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-3">
       <div className="container-fluid">
+        {/* Logo */}
         <Link className="navbar-brand" to="/">
-          <img src={BookHookLogo} alt="Book Hook Logo" width="60" height="45" />
+          <img src={BookHookLogo} alt="Book Hook Logo" style={{
+            filter: "invert(1)",
+          }} width="60" height="45" />
         </Link>
-        <div className="collapse navbar-collapse">
-          <ul className="navbar-nav me-auto">
-            <li className="nav-item">
-              {isLoggedIn ? (
-                <>
-                  <span className="navbar-text text-white me-3">Welcome, {username}!</span>
-                  <button className="btn btn-outline-light" onClick={handleLogout}>Log Out</button>
-                </>
-              ) : (
-                <Link className="btn btn-outline-light" to="/login">Log In</Link>
-              )}
-            </li>
+
+        {/* Navbar Collapse for Responsive Design */}
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <ul className="navbar-nav ms-auto">
+            {/* If logged in, show username and logout button */}
+            {isLoggedIn ? (
+              <>
+                <li className="nav-item">
+                  <span className="nav-link text-white fw-bold">
+                    Welcome, {username || "User"}!
+                  </span>
+                </li>
+                <li className="nav-item">
+                  <button className="btn btn-outline-light" onClick={handleLogout}>
+                    Log Out
+                  </button>
+                </li>
+              </>
+            ) : (
+              // If not logged in, show login button
+              <li className="nav-item">
+                <Link className="btn btn-outline-light" to="/login">
+                  Log In
+                </Link>
+              </li>
+            )}
           </ul>
         </div>
       </div>

@@ -28,8 +28,8 @@ const App: React.FC = () => {
       }
     };
 
-    checkLoginStatus(); // ✅ Run on mount
-    window.addEventListener("storage", checkLoginStatus); // ✅ Listen for login/logout
+    checkLoginStatus();
+    window.addEventListener("storage", checkLoginStatus);
 
     return () => {
       window.removeEventListener("storage", checkLoginStatus);
