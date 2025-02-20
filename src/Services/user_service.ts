@@ -35,4 +35,31 @@ const updateProfile = (userId: string, avatarUrl: string) => {
   return apiClient.put(`/auth/updateProfile`, { userId, avatar: avatarUrl });
 };
 
-export default { register, uploadImage , updateProfile};
+const login = (user: { email: string; password: string }) => {
+  console.log("📤 Sending Login Request:", user);
+
+  return apiClient.post<{ 
+    email: string; 
+    username: string; 
+    _id: string; 
+    accessToken: string; 
+    refreshToken: string 
+  }>('/auth/login', user);
+};
+
+const API_BASE_URL = "http://localhost:3004"; // ✅ Ensure backend URL is correct
+
+const getUserProfile = () => {
+  return apiClient.get<{ email: string; username: string; _id: string }>(
+    `${API_BASE_URL}/auth/profile`,  // ✅ Ensure correct URL
+    {
+      headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
+    }
+  );
+};
+
+export default { register, login, uploadImage, updateProfile, getUserProfile };
+
+
+
+

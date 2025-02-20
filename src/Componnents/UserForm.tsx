@@ -71,8 +71,7 @@ const UserForm: FC = () => {
             alert("An unknown error occurred.");
         }
     };
-    
-    
+
     
     
 
@@ -85,39 +84,32 @@ const UserForm: FC = () => {
         }}>
             <form onSubmit={handleSubmit(onSubmit)}
                 style={{
-                    width: '75%',
+                    width: '400px',
                     border: '2px solid black',
                     padding: '10px',
                     margin: '10px',
-                    backgroundColor: 'lightgray',
+                    backgroundColor: '#C1BAAC',
                     borderRadius: '5px'
                 }}>
                 <h1 style={{ textAlign: 'center' }}>Registration Form</h1>
 
                 <div className='mb-3'>
-                    <label htmlFor='name' className='form-label'>Name</label>
+                    <label htmlFor='name' className='form-label'>UserName:</label>
                     <input {...register('name')} type='text' className='form-control' id='name' />
                     {errors.name && <p className='text-danger'>{errors.name.message}</p>}
                 </div>
 
                 <div className='mb-3'>
-                    <label htmlFor='email' className='form-label'>Email</label>
+                    <label htmlFor='email' className='form-label'>Email:</label>
                     <input {...register('email')} type='text' className='form-control' id='email' />
                     {errors.email && <p className='text-danger'>{errors.email.message}</p>}
                 </div>
 
                 <div className='mb-3'>
-                    <label htmlFor='password' className='form-label'>Password</label>
+                    <label htmlFor='password' className='form-label'>Password:</label>
                     <input {...register('password')} type='password' className='form-control' id='password' />
                     {errors.password && <p className='text-danger'>{errors.password.message}</p>}
                 </div>
-
-                <div className='mb-3'>
-                    <label htmlFor='age' className='form-label'>Age</label>
-                    <input {...register('age', { valueAsNumber: true })} type='number' className='form-control' id='age' />
-                    {errors.age && <p className='text-danger'>{errors.age.message}</p>}
-                </div>
-
                 {/* File Input */}
                 <input 
                     ref={inputFile} 
@@ -153,7 +145,7 @@ const UserForm: FC = () => {
                     justifyContent: 'center',
                     marginTop: '10px'
                 }}>
-                    <button type='submit' className='btn btn-primary'>Register</button>
+                    <button type='submit' className='btn btn-dark'>Register</button>
                 </div>
             </form>
         </div>
