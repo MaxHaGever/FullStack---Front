@@ -50,9 +50,10 @@ const Navbar: React.FC<NavbarProps> = ({ isLoggedIn, setIsLoggedIn, username }) 
             {isLoggedIn ? (
               <>
                 <li className="nav-item">
-                  <span className="nav-link text-white fw-bold">
-                    Welcome, {username || "User"}!
-                  </span>
+                <span className="navbar-text text-white me-3">
+  {isLoggedIn ? `Welcome, ${username || "User"}!` : "Welcome, Guest!"}
+</span>
+
                 </li>
                 <li className="nav-item">
                   <button className="btn btn-outline-light" onClick={handleLogout}>

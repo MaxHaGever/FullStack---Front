@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate} from "react-router-dom";
 import HomePage from "./HomePage";
 import Navbar from "./NavBar";
 import RegistrationForm from "./RegistrationForm";
@@ -17,25 +17,27 @@ const App: React.FC = () => {
       const token = localStorage.getItem("accessToken");
       if (!token) {
         setIsLoggedIn(false);
-        setLoading(false);
+        setLoading(false);  // ✅ Stop loading when no token is found
         return;
       }
-
+  
       try {
         const response = await userService.getUserProfile();
         setIsLoggedIn(true);
         setUsername(response.data.username);
-        console.log("✅ User logged in:", response.data.username);
+        console.log("✅ Fetched user:", response.data.username);
       } catch (error) {
         console.error("❌ Failed to fetch user data", error);
         setIsLoggedIn(false);
       } finally {
-        setLoading(false);
+        setLoading(false);  // ✅ Stop loading after API call completes
       }
     };
-
+  
     checkLoginStatus();
   }, []);
+  
+  
 
   if (loading) {
     return <div style={{ textAlign: "center", marginTop: "50px", fontSize: "20px" }}>Loading...</div>; // ✅ Show loading message
