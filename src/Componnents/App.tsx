@@ -12,31 +12,31 @@ const App: React.FC = () => {
   const [username, setUsername] = useState<string | null>(null);
   const [loading, setLoading] = useState(true); // ✅ Prevent flashing
 
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      const token = localStorage.getItem("accessToken");
-      if (!token) {
-        setIsLoggedIn(false);
-        setLoading(false);  // ✅ Stop loading when no token is found
-        return;
-      }
-  
-      try {
-        const response = await userService.getUserProfile();
-        setIsLoggedIn(true);
-        setUsername(response.data.username);
-        console.log("✅ Fetched user:", response.data.username);
-      } catch (error) {
-        console.error("❌ Failed to fetch user data", error);
-        setIsLoggedIn(false);
-      } finally {
-        setLoading(false);  // ✅ Stop loading after API call completes
-      }
-    };
-  
-    checkLoginStatus();
-  }, []);
-  
+useEffect(() => {
+  const checkLoginStatus = async () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      setIsLoggedIn(false);
+      setLoading(false);  // ✅ Stop loading when no token is found
+      return;
+    }
+
+    try {
+      const response = await userService.getUserProfile();
+      setIsLoggedIn(true);
+      setUsername(response.data.username);
+      console.log("✅ Fetched user:", response.data.username);
+    } catch (error) {
+      console.error("❌ Failed to fetch user data", error);
+      setIsLoggedIn(false);
+    } finally {
+      setLoading(false);  // ✅ Stop loading after API call completes
+    }
+  };
+
+  checkLoginStatus();
+}, []);
+
   
 
   if (loading) {

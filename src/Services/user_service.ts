@@ -23,7 +23,6 @@ const login = (credentials: { email: string; password: string }) => {
     });
 };
 
-
 const getUserProfile = () => {
   return apiClient.get<{ _id: string; email: string; username: string; avatar?: string }>(
     "/auth/profile",
@@ -49,10 +48,11 @@ const logout = () => {
 const uploadImage = (image: File) => {
   const formData = new FormData();
   formData.append("file", image);
-
+console.log("📤 Sending Image Upload Request:", image);
   return apiClient.post<{ url: string }>("/file/", formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
+  console.log("📤 Sending Image Upload Request:", image);
 };
 
 

@@ -32,48 +32,55 @@ const UserForm: FC = () => {
 
   const onSubmit = async (data: FormData) => {
     try {
-      // Gather the data for registration
-      const userPayload = {
-        username: data.name,
-        password: data.password,
-        email: data.email,
-      };
-
-      console.log("📤 Sending Register Request:", userPayload);
-
-      // Send register request
-      const registerResponse = await userService.register(userPayload);
-      console.log("✅ Register Response:", registerResponse.data);
-
-      const userId = registerResponse.data._id ?? "";
-
-      if (!userId) {
-        console.error("❌ Error: User ID is missing!");
-        alert("Registration failed. Please try again.");
-        return;
-      }
-
-      let imageUrl = "";
-
-      // Upload image if selected
-      if (selectedImage) {
-        const uploadResponse = await userService.uploadImage(selectedImage);
-        imageUrl = uploadResponse.data.url;
-        console.log("✅ Image Uploaded:", imageUrl);
-      }
-
-      // Update the profile with the avatar if available
-      if (imageUrl) {
-        await userService.updateProfile({ userId, avatar: imageUrl });
-        console.log(`✅ User ${registerResponse.data.username} profile updated with avatar: ${imageUrl}`);
-      }
-
-      alert("Registration successful!");
+        const userPayload = {
+            username: data.name,
+            password: data.password,
+            email: data.email,
+        };
+  
+        console.log("📤 Sending Register Request:", userPayload);
+  
+        // Send registration request to the backend
+        const registerResponse = await userService.register(userPayload);
+        console.log("✅ Register Response:", registerResponse.data);
+  
+        const userId = registerResponse.data._id ?? "";
+  
+        if (!userId) {
+            console.error("❌ Error: User ID is missing!");
+            alert("Registration failed. Please try again.");
+            return;
+        }
+  
+        let imageUrl = "";
+        // Step 1: Upload the image if selected
+        if (selectedImage) {
+            console.log("📤 Sending Image Upload Request:", selectedImage);
+            const uploadResponse = await userService.uploadImage(selectedImage);
+            imageUrl = uploadResponse.data.url;
+            console.log("✅ Image Uploaded:", imageUrl);
+            console.log("imageUrl", imageUrl);
+        }
+  
+        // Step 2: Ensure the avatar URL is properly formatted
+        // Only prepend base URL if not already included
+        console.log("imageUrl", imageUrl);
+          // Step 3: Update profile with the avatar URL if it's set
+        console.log("imageUrl", imageUrl);
+        if (imageUrl) {
+            await userService.updateProfile({ userId, avatar: imageUrl });
+            console.log(`✅ User ${registerResponse.data.username} profile updated with avatar: ${imageUrl}`);
+        }
+  
+        alert("Registration successful!");
     } catch (error: unknown) {
-      console.error("❌ Error during registration:", error);
-      alert("An unknown error occurred.");
+        console.error("❌ Error during registration:", error);
+        alert("An unknown error occurred.");
     }
   };
+  
+  
+
 
   return (
     <div style={{
