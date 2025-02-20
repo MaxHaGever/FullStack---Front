@@ -92,11 +92,9 @@ const UserForm: FC = () => {
       <form onSubmit={handleSubmit(onSubmit)}
         style={{
           width: '400px',
-          border: '2px solid black',
           padding: '10px',
           margin: '10px',
           backgroundColor: '#C1BAAC',
-          borderRadius: '5px'
         }}>
         <h1 style={{ textAlign: 'center' }}>Registration Form</h1>
 

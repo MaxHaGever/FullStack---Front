@@ -49,16 +49,25 @@ const Navbar: React.FC<NavbarProps> = ({ isLoggedIn, setIsLoggedIn, username }) 
             {/* If logged in, show username and logout button */}
             {isLoggedIn ? (
               <>
-                <li className="nav-item">
+                <li className="nav-item mt-2">
                 <span className="navbar-text text-white me-3">
   {isLoggedIn ? `Welcome, ${username || "User"}!` : "Welcome, Guest!"}
 </span>
 
                 </li>
                 <li className="nav-item">
+                <button className="btn btn-outline-light" style={{
+                    marginRight: "10px",
+                  }} >
+                    Profile
+                  </button>
                   <button className="btn btn-outline-light" onClick={handleLogout}>
                     Log Out
                   </button>
+                  
+                </li>
+                <li className="nav-item">
+
                 </li>
               </>
             ) : (

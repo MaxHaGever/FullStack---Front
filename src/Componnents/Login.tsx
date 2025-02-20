@@ -28,10 +28,6 @@ const Login: FC<{ setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>> }
         window.dispatchEvent(new Event("storage")); // ✅ Notify App.tsx
         
         // ✅ Fetch and store username
-        const userResponse = await userService.getUserProfile();
-        console.log("✅ User logged in:", userResponse.data.username);
-        
-        alert(`Login successful! Welcome, ${userResponse.data.username}!`);
         navigate("/"); // Redirect to home
       } catch (error) {
         console.error("❌ Login failed:", error);
@@ -45,7 +41,7 @@ const Login: FC<{ setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>> }
   
     return (
       <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-        <form onSubmit={handleSubmit(onSubmit)} style={{ width: "400px", border: "2px solid black", padding: "10px", backgroundColor: "#C1BAAC", borderRadius: "5px" }}>
+        <form onSubmit={handleSubmit(onSubmit)} style={{ width: "400px", padding: "10px", backgroundColor: "#C1BAAC", }}>
           <h1 style={{ textAlign: "center" }}>Login</h1>
           <div className="mb-3">
             <label>Email:</label>
@@ -57,7 +53,10 @@ const Login: FC<{ setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>> }
             <input {...register("password")} type="password" className="form-control" />
             {errors.password && <p className="text-danger">{errors.password.message}</p>}
           </div>
-          <button type="submit" className="btn btn-dark">Log In</button>
+          <button type="submit" className="btn btn-dark" style={{
+            width: "100%",
+            marginTop: "10px",
+          }}>Log In</button>
         </form>
       </div>
     );

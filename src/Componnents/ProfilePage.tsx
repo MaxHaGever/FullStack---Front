@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import userService from "../Services/user_service";
+import { useRef } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faImage } from '@fortawesome/free-solid-svg-icons';
 
 // Helper function to fix avatar URL
 const fixAvatarUrl = (url: string | undefined): string => {
@@ -10,6 +13,7 @@ const fixAvatarUrl = (url: string | undefined): string => {
 };
 
 const ProfilePage = () => {
+  const inputFile = useRef<HTMLInputElement>(null);
   const [user, setUser] = useState<{ _id?: string; username: string; email: string; avatar?: string }>({
     _id: "",
     username: "",
@@ -80,11 +84,9 @@ const ProfilePage = () => {
         onSubmit={(e) => e.preventDefault()}
         style={{
           width: "400px",
-          border: "2px solid black",
           padding: "10px",
           margin: "10px",
           backgroundColor: "#C1BAAC",
-          borderRadius: "5px",
         }}
       >
         <h1 style={{ textAlign: "center" }}>Profile</h1>
@@ -96,9 +98,17 @@ const ProfilePage = () => {
             alt="User Avatar"
             style={{ width: "150px", height: "150px", borderRadius: "50%" }}
           />
-          <input type="file" onChange={handleFileChange} />
+          <input ref={inputFile} type="file" onChange={handleFileChange} style={{
+            display: "none",
+          }} />
         </div>
-
+        <FontAwesomeIcon icon={faImage} size='2x' onClick={() => inputFile.current?.click()} style={{
+            cursor: "pointer",
+            justifyContent: "center",
+            display: "flex",
+            margin: "auto",
+            marginTop: "10px",
+        }}/>
         {/* Username */}
         <div className="mb-3">
           <label htmlFor="username" className="form-label">Username:</label>
