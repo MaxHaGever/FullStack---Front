@@ -3,6 +3,7 @@ import userService from "../Services/user_service";
 import { useRef } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from "react-router-dom";
 
 // Helper function to fix avatar URL
 const fixAvatarUrl = (url: string | undefined): string => {
@@ -21,6 +22,7 @@ const ProfilePage = () => {
     avatar: "",
   });
 
+  const navigate = useNavigate();
   const [newUsername, setNewUsername] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -40,6 +42,10 @@ const ProfilePage = () => {
     };
     fetchUserProfile();
   }, []);
+
+  const handlePostAPost = () => {
+    navigate("/post-a-post"); // Navigate to the Post a Post page
+};
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -147,8 +153,27 @@ const ProfilePage = () => {
 
         {/* Update Button */}
         <div style={{ textAlign: "center" }}>
-          <button onClick={handleUpdateProfile} className="btn btn-dark">Update Profile</button>
+          <button onClick={handleUpdateProfile} className="btn btn-dark" style={{
+            marginBottom: "10px",
+            width: "50%",
+          }}>Update Profile</button>
         </div>
+
+        <div>
+                <button
+                    className="btn btn-dark"
+                    onClick={handlePostAPost}
+                    style={{
+                        width: "50%",
+                        marginTop: "10px",
+                        justifyContent: "center",
+                        display: "flex",
+                        margin: "auto",
+                    }}
+                >
+                    Post a Review
+                </button>
+            </div>
       </form>
     </div>
   );

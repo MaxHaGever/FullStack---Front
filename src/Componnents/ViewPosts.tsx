@@ -1,29 +1,16 @@
 import React, { useEffect, useState } from "react";
 import postService from "../Services/post_service"; // Assuming you have postService for posts actions
 
-// types.ts (or wherever you prefer to define types)
-
-export interface IComment {
-    _id: string;
-    text: string;
-    sender: string;
-    createdAt: string;
-  }
-  
-  export interface IPost {
-    _id: string;
-    title: string;
-    content: string;
-    sender: string;
-    image?: string;
-    comments: IComment[];
-    createdAt: string;
-    updatedAt: string;
-  }
-  
+interface Post {
+  _id: string;
+  title: string;
+  content: string;
+  sender: string;
+  image?: string; // Optional image field
+}
 
 const ViewPosts: React.FC = () => {
-  const [posts, setPosts] = useState<IPost[]>([]); // Use IPost type here
+  const [posts, setPosts] = useState<Post[]>([]);  // Change to the new Post type
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
@@ -50,26 +37,12 @@ const ViewPosts: React.FC = () => {
         {posts.length === 0 ? (
           <p>No posts available yet.</p>
         ) : (
-          posts.map((post: IPost) => (
+          posts.map((post) => (
             <div key={post._id} className="post-card">
               <h2>{post.title}</h2>
               <p>{post.content}</p>
               {post.image && <img src={post.image} alt="Post" style={{ width: "100%", maxHeight: "300px" }} />}
               <p>By: {post.sender}</p>
-              <div className="comments">
-                {post.comments && post.comments.length > 0 ? (
-                  <ul>
-                    {post.comments.map((comment: IComment) => (
-                      <li key={comment._id}>
-                        <p>{comment.text}</p>
-                        <p><em>By: {comment.sender}</em></p>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No comments yet.</p>
-                )}
-              </div>
               <button>Comment</button> {/* Add comment functionality */}
               <button>Like</button> {/* Add like functionality */}
             </div>

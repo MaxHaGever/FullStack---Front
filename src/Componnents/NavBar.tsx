@@ -34,6 +34,7 @@ const Navbar: React.FC<NavbarProps> = ({ isLoggedIn, setIsLoggedIn, username }) 
             filter: "invert(1)",
           }} width="60" height="45" />
         </Link>
+        
 
         {/* Navbar Collapse for Responsive Design */}
         <button

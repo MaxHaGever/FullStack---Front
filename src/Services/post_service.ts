@@ -10,25 +10,22 @@ export interface IPost {
     comments: string[]; // Array of comment IDs
 }
 
-// Create a new post
-const createPost = (postData: { title: string; content: string; image?: File }) => {
-    const formData = new FormData();
-    formData.append("title", postData.title);
-    formData.append("content", postData.content);
-    if (postData.image) {
-        formData.append("image", postData.image);
-    }
 
-    return apiClient.post("/posts", formData, {
-        headers: {
-            "Content-Type": "multipart/form-data",
-        },
-    });
+const getAllPosts = () => {
+  return apiClient.get("/posts");
 };
 
-// Get all posts
-const getPosts = () => {
-    return apiClient.get<IPost[]>("/posts");
+const createPost = (postData: { title: string; content: string; image?: File }, userId: string) => {
+  const formData = new FormData();
+  formData.append("title", postData.title);
+  formData.append("content", postData.content);
+  if (postData.image) formData.append("image", postData.image);
+
+  return apiClient.post(`/posts?userId=${userId}`, formData, {
+      headers: {
+          "Content-Type": "multipart/form-data",
+      },
+  });
 };
 
 // Get a post by ID
@@ -58,7 +55,7 @@ const deletePost = (postId: string) => {
 
 export default {
     createPost,
-    getPosts,
+    getAllPosts,
     getPostById,
     likePost,
     getPostsBySender,
