@@ -21,6 +21,10 @@ const Navbar: React.FC<NavbarProps> = ({ isLoggedIn, setIsLoggedIn, username }) 
     navigate("/");
   };
 
+  const handleProfileClick = () => {
+    navigate("/profile"); // Navigate to the profile page when the button is clicked
+  };
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-3">
       <div className="container-fluid">
@@ -56,7 +60,7 @@ const Navbar: React.FC<NavbarProps> = ({ isLoggedIn, setIsLoggedIn, username }) 
 
                 </li>
                 <li className="nav-item">
-                <button className="btn btn-outline-light" style={{
+                <button onClick={handleProfileClick} className="btn btn-outline-light" style={{
                     marginRight: "10px",
                   }} >
                     Profile
