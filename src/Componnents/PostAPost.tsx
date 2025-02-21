@@ -1,83 +1,90 @@
-import React, { useEffect, useState } from "react";
-import postService from "../Services/post_service"; // Assuming you have postService for posts actions
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; 
+import postService from "../Services/post_service"; 
 
-// types.ts (or wherever you prefer to define types)
+interface PostAPostProps {
+  isLoggedIn: boolean;
+  userId: string;
+}
 
-export interface IComment {
-    _id: string;
-    text: string;
-    sender: string;
-    createdAt: string;
+const PostAPost: React.FC<PostAPostProps> = ({ isLoggedIn }) => {
+  const navigate = useNavigate();
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [error, setError] = useState("");
+
+  // Redirect if the user is not logged in
+  if (!isLoggedIn) {
+    navigate("/login");
+    return null;
   }
-  
-  export interface IPost {
-    _id: string;
-    title: string;
-    content: string;
-    sender: string;
-    image?: string;
-    comments: IComment[];
-    createdAt: string;
-    updatedAt: string;
-  }
-  
 
-const ViewPosts: React.FC = () => {
-  const [posts, setPosts] = useState<IPost[]>([]); // Use IPost type here
-  const [error, setError] = useState<string>("");
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await postService.getAllPosts(); // Call the service to fetch all posts
-        setPosts(response.data); // Set the posts in state
-      } catch (err) {
-        setError("Failed to load posts.");
-        console.error("❌ Error fetching posts:", err);
-      }
-    };
-    fetchPosts();
-  }, []);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+  
+    if (!title || !content) {
+      setError("Title and content are required.");
+      return;
+    }
+  
+    const postData = { title, content }; // ✅ Matches Swagger
+  
+    try {
+      await postService.createPost(postData);
+      navigate("/profile"); // ✅ Redirect after successful post
+    } catch {
+      setError("Failed to create post. Please try again.");
+    }
+  };
+  
+  
 
   return (
     <div className="container">
-      <h1>All Posts</h1>
+      <h1>Create a Post</h1>
+      <form onSubmit={handleSubmit}>
+        <div className="mb-3">
+          <label htmlFor="title" className="form-label">Post Title</label>
+          <input
+            type="text"
+            id="title"
+            className="form-control"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
+        </div>
 
-      {error && <p className="text-danger">{error}</p>}
+        <div className="mb-3">
+          <label htmlFor="content" className="form-label">Content</label>
+          <textarea
+            id="content"
+            className="form-control"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            rows={5}
+            required
+          ></textarea>
+        </div>
 
-      {/* Display all posts */}
-      <div className="post-list">
-        {posts.length === 0 ? (
-          <p>No posts available yet.</p>
-        ) : (
-          posts.map((post: IPost) => (
-            <div key={post._id} className="post-card">
-              <h2>{post.title}</h2>
-              <p>{post.content}</p>
-              {post.image && <img src={post.image} alt="Post" style={{ width: "100%", maxHeight: "300px" }} />}
-              <p>By: {post.sender}</p>
-              <div className="comments">
-                {post.comments && post.comments.length > 0 ? (
-                  <ul>
-                    {post.comments.map((comment: IComment) => (
-                      <li key={comment._id}>
-                        <p>{comment.text}</p>
-                        <p><em>By: {comment.sender}</em></p>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No comments yet.</p>
-                )}
-              </div>
-              <button>Comment</button> {/* Add comment functionality */}
-              <button>Like</button> {/* Add like functionality */}
-            </div>
-          ))
-        )}
-      </div>
+        <div className="mb-3">
+          <label htmlFor="image" className="form-label">Post Image (optional)</label>
+          <input
+            type="file"
+            id="image"
+            className="form-control"
+            accept="image/*"
+          />
+        </div>
+
+        {error && <p className="text-danger">{error}</p>}
+
+        <button type="submit" className="btn btn-primary">
+          Submit Post
+        </button>
+      </form>
     </div>
   );
 };
 
-export default ViewPosts;
+export default PostAPost;

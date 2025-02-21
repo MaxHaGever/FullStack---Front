@@ -15,18 +15,27 @@ const getAllPosts = () => {
   return apiClient.get("/posts");
 };
 
-const createPost = (postData: { title: string; content: string; image?: File }, userId: string) => {
-  const formData = new FormData();
-  formData.append("title", postData.title);
-  formData.append("content", postData.content);
-  if (postData.image) formData.append("image", postData.image);
+const createPost = async (postData: { title: string; content: string }) => {
+  const token = localStorage.getItem("accessToken");
 
-  return apiClient.post(`/posts?userId=${userId}`, formData, {
-      headers: {
-          "Content-Type": "multipart/form-data",
-      },
+  if (!token) {
+    console.error("❌ Missing authentication token!");
+    return Promise.reject(new Error("Unauthorized: No token found."));
+  }
+
+  console.log("📤 Sending Post Request:", { title: postData.title, content: postData.content });
+
+  return apiClient.post(`/posts`, postData, { // ✅ No userId in query
+    headers: {
+      "Authorization": `Bearer ${token}`, // ✅ Only the access token
+      "Content-Type": "application/json", // ✅ Must match Swagger
+    },
   });
 };
+
+
+
+
 
 // Get a post by ID
 const getPostById = (postId: string) => {

@@ -7,36 +7,41 @@ import Login from "./Login";
 import ProfilePage from "./ProfilePage";
 import ViewPosts from "./ViewPosts"; // Import the ViewPosts component
 import userService from "../Services/user_service";
+import PostAPost from "./PostAPost"; // Import the PostAPost component
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [username, setUsername] = useState<string | null>(null);
   const [loading, setLoading] = useState(true); // ✅ Prevent flashing
+  const [userId, setUserId] = useState<string | null>(null); // ✅ Add this state
+
 
   useEffect(() => {
     const checkLoginStatus = async () => {
       const token = localStorage.getItem("accessToken");
       if (!token) {
         setIsLoggedIn(false);
-        setLoading(false);  // ✅ Stop loading when no token is found
+        setLoading(false);
         return;
       }
-
+  
       try {
         const response = await userService.getUserProfile();
         setIsLoggedIn(true);
+        setUserId(response.data._id); // ✅ Store the user ID
         setUsername(response.data.username);
         console.log("✅ Fetched user:", response.data.username);
       } catch (error) {
         console.error("❌ Failed to fetch user data", error);
         setIsLoggedIn(false);
       } finally {
-        setLoading(false);  // ✅ Stop loading after API call completes
+        setLoading(false);
       }
     };
-
+  
     checkLoginStatus();
   }, []);
+  
 
   if (loading) {
     return <div style={{ textAlign: "center", marginTop: "50px", fontSize: "20px" }}>Loading...</div>; // ✅ Show loading message
@@ -52,6 +57,7 @@ const App: React.FC = () => {
           <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/view-posts" element={<ViewPosts />} /> {/* New Route */}
+          <Route path="/post-a-post" element={<PostAPost isLoggedIn={isLoggedIn} userId={userId || ""} />} />
         </Routes>
       </div>
     </Router>
