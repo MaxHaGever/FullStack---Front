@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from "react-router-dom";
+import postService from "../Services/post_service";
 
 // Helper function to fix avatar URL
 const fixAvatarUrl = (url: string | undefined): string => {
@@ -23,10 +24,13 @@ const ProfilePage = () => {
   });
 
   const navigate = useNavigate();
+  const [myPosts, setMyPosts] = useState<{ _id: string; title: string; content: string; image?: string }[]>([]);
+  const [editingPost, setEditingPost] = useState<{ id: string; title: string; content: string } | null>(null);
   const [newUsername, setNewUsername] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [selectedAvatar, setSelectedAvatar] = useState<File | null>(null);
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -40,6 +44,17 @@ const ProfilePage = () => {
         console.error("❌ Error fetching user profile:", error);
       }
     };
+    const fetchMyPosts = async () => {
+      try {
+        const response = await postService.getMyPosts();
+        console.log("📥 My Posts:", response.data);
+        setMyPosts(response.data);
+      } catch (error) {
+        setError("Failed to load your posts.");
+        console.error("❌ Error fetching my posts:", error);
+      }
+    };
+    fetchMyPosts();
     fetchUserProfile();
   }, []);
 
@@ -83,6 +98,38 @@ const ProfilePage = () => {
       alert("Failed to update profile.");
     }
   };
+
+  const handleEditPost = (postId: string, title: string, content: string) => {
+    setEditingPost({ id: postId, title, content });
+  };
+
+  const handleUpdatePost = async () => {
+    if (!editingPost) return;
+
+    try {
+      console.log(`📤 Updating Post: ${editingPost.id}`); // ✅ Debugging
+
+      await postService.updatePost(editingPost.id, {
+        title: editingPost.title,
+        content: editingPost.content,
+      });
+
+      setMyPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post._id === editingPost.id ? { ...post, title: editingPost.title, content: editingPost.content } : post
+        )
+      );
+
+      setEditingPost(null); // ✅ Exit edit mode
+      alert("Post updated successfully!"); // ✅ Show success message
+    } catch (error) {
+      console.error("❌ Failed to update post:", error);
+      alert("Failed to update post.");
+    }
+};
+
+
+  
 
   return (
     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
@@ -175,7 +222,66 @@ const ProfilePage = () => {
                 </button>
             </div>
       </form>
-    </div>
+      <div>
+      <h2>My Reviews</h2>
+        {error && <p className="text-danger">{error}</p>}
+
+        {/* Display User's Reviews */}
+        {myPosts.length === 0 ? (
+          <p>No posts created yet.</p>
+        ) : (
+          myPosts.map((post) => (
+            <div key={post._id} className="post-card" style={{ backgroundColor: "#fff", padding: "10px", borderRadius: "5px", marginBottom: "10px" }}>
+              {editingPost && editingPost.id === post._id ? (
+                <>
+                  <input
+                    type="text"
+                    value={editingPost.title}
+                    onChange={(e) => setEditingPost({ ...editingPost, title: e.target.value })}
+                    className="form-control"
+                  />
+                  <textarea
+                    value={editingPost.content}
+                    onChange={(e) => setEditingPost({ ...editingPost, content: e.target.value })}
+                    className="form-control"
+                    rows={3}
+                  />
+                  <button onClick={handleUpdatePost} className="btn btn-success" style={{ marginTop: "5px" }}>
+                    Save
+                  </button>
+                  <button onClick={() => setEditingPost(null)} className="btn btn-secondary" style={{ marginTop: "5px", marginLeft: "5px" }}>
+                    Cancel
+                  </button>
+                </>
+              ) : (
+                <>
+                  <h3>{post.title}</h3>
+                  <p>{post.content}</p>
+                  {post.image && (
+                <img
+                  src={`http://localhost:3004${post.image}`} 
+                  alt="Post"
+                  style={{ width: "100%", maxHeight: "200px", objectFit: "cover", borderRadius: "5px" }}
+                  onError={(e) => {
+                    console.error(`❌ Failed to load image for post ${post._id}:`, e);
+                    (e.target as HTMLImageElement).style.display = "none";
+                  }}
+                />
+              )}
+                  <button
+                    onClick={() => handleEditPost(post._id, post.title, post.content)}
+                    className="btn btn-dark"
+                    style={{ marginTop: "5px" }}
+                  >
+                    Edit Post
+                  </button>
+                </>
+              )}
+            </div>
+          ))
+        )}
+      </div>
+      </div>
   );
 };
 

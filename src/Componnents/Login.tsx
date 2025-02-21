@@ -18,22 +18,31 @@ const Login: FC<{ setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>> }
 
     const onSubmit = async (data: FormData) => {
       try {
-        console.log("📤 Sending Login Request:", data);
-        
-        const response = await userService.login(data);
-        localStorage.setItem("accessToken", response.data.accessToken);
-        localStorage.setItem("refreshToken", response.data.refreshToken);
-        
-        setIsLoggedIn(true); // ✅ Update state immediately
-        window.dispatchEvent(new Event("storage")); // ✅ Notify App.tsx
-        
-        // ✅ Fetch and store username
-        navigate("/"); // Redirect to home
+          console.log("📤 Sending Login Request:", data);
+          
+          const response = await userService.login(data);
+          
+          if (!response.data.accessToken || !response.data._id) { // ✅ Ensure userId exists
+              console.error("❌ Login response is missing token or userId");
+              alert("Error: Missing token or user ID.");
+              return;
+          }
+  
+          localStorage.setItem("accessToken", response.data.accessToken);
+          localStorage.setItem("userId", response.data._id); // ✅ Store userId
+          localStorage.setItem("username", response.data.username); // ✅ Store username
+  
+          setIsLoggedIn(true);
+          window.dispatchEvent(new Event("storage")); 
+          
+          navigate("/profile"); 
       } catch (error) {
-        console.error("❌ Login failed:", error);
-        alert("Login failed. Please check your credentials.");
+          console.error("❌ Login failed:", error);
+          alert("Login failed. Please check your credentials.");
       }
-    };
+  };
+  
+  
     
     
     

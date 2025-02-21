@@ -13,6 +13,7 @@ const PostAPost: React.FC<PostAPostProps> = ({ isLoggedIn }) => {
   const [image, setImage] = useState<File | null>(null);
   const [error, setError] = useState("");
 
+
   // Redirect if the user is not logged in
   if (!isLoggedIn) {
     navigate("/login");
@@ -34,9 +35,18 @@ const PostAPost: React.FC<PostAPostProps> = ({ isLoggedIn }) => {
         return;
     }
 
+    const username = localStorage.getItem("username"); // ✅ Retrieve username from localStorage
+
+    if (!username) {
+        console.error("❌ Missing username in localStorage");
+        setError("Error: Unable to retrieve username.");
+        return;
+    }
+
     const postData = new FormData();
     postData.append("title", title);
     postData.append("content", content);
+    postData.append("username", username); // ✅ Add username to the post data
     if (image) {
         postData.append("image", image);
     }
@@ -50,6 +60,7 @@ const PostAPost: React.FC<PostAPostProps> = ({ isLoggedIn }) => {
         setError("Failed to create post. Please try again.");
     }
 };
+
 
 
   

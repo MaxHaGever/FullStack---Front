@@ -1,3 +1,4 @@
+
 import apiClient from "./api-client"; // This imports your configured API client instance (axios, fetch, etc.)
 
 export interface IPost {
@@ -37,6 +38,18 @@ const createPost = async (postData: FormData) => {
 };
 
 
+const getMyPosts = async () => {
+  const userId = localStorage.getItem("userId"); // ✅ Get userId from localStorage
+
+  console.log("📤 Fetching My Posts: User ID", { userId }); // ✅ Debugging
+
+  if (!userId) {
+    console.error("❌ Missing user ID!", { userId });
+    return Promise.reject(new Error("Unauthorized: No user ID found."));
+  }
+
+  return apiClient.get(`/posts/by-sender?sender=${userId}`); // ✅ No token required
+};
 
 
 
@@ -57,9 +70,30 @@ const getPostsBySender = (senderId: string) => {
 };
 
 // Update post (if needed)
-const updatePost = (postId: string, updatedData: { title?: string; content?: string }) => {
-    return apiClient.put(`/posts/${postId}`, updatedData);
+const updatePost = async (postId: string, updatedData: { title?: string; content?: string }) => {
+  const token = localStorage.getItem("accessToken");
+
+  if (!token) {
+    console.error("❌ Missing authentication token!");
+    return Promise.reject(new Error("Unauthorized: No token found."));
+  }
+
+  console.log(`📤 Sending Update Request for Post: ${postId}`, updatedData);
+
+  return apiClient.put(`/posts/${postId}`, updatedData, {
+    headers: { Authorization: `Bearer ${token}` }, // ✅ Include token in headers
+  })
+  .then(response => {
+    console.log(`✅ Post Updated Successfully:`, response.data);
+    return response.data;
+  })
+  .catch(error => {
+    console.error(`❌ Error updating post ${postId}:`, error);
+    throw error;
+  });
 };
+
+
 
 // Delete post
 const deletePost = (postId: string) => {
@@ -74,4 +108,5 @@ export default {
     getPostsBySender,
     updatePost,
     deletePost,
+    getMyPosts,
 };

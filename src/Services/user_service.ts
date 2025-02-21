@@ -55,5 +55,9 @@ console.log("📤 Sending Image Upload Request:", image);
   console.log("📤 Sending Image Upload Request:", image);
 };
 
+const getUserById = async (userId: string) => {
+  return apiClient.get(`/users/${userId}`);
+};
 
-export default { register, login, getUserProfile, updateProfile, logout , uploadImage};
+
+export default { register, login, getUserProfile, updateProfile, logout , uploadImage, getUserById};
