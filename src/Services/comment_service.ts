@@ -5,23 +5,19 @@ const getCommentsByPost = (postId: string) => {
   };
   
 
-const addComment = (postId: string, text: string) => {
-  const token = localStorage.getItem("accessToken"); // ✅ Get auth token
-  if (!token) {
-    throw new Error("Unauthorized: No token found");
-  }
-
-  return apiClient.post(
-    "/comments",
-    { postId, text },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-};
+  const addComment = (postId: string, text: string, token: string) => {
+    return apiClient.post(
+      "/comments",
+      { postId, text },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ Send token for authentication
+          "Content-Type": "application/json", // ✅ Ensure JSON format
+        },
+      }
+    );
+  };
+  
 
 const deleteComment = (commentId: string) => {
   const token = localStorage.getItem("accessToken"); // ✅ Get auth token
