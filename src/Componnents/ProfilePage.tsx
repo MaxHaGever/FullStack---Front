@@ -44,8 +44,8 @@ const ProfilePage = () => {
   }, []);
 
   const handlePostAPost = () => {
-    navigate("/post-a-post"); // Navigate to the Post a Post page
-};
+    navigate("/post-a-post"); // ✅ Ensure this is the correct route
+  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {

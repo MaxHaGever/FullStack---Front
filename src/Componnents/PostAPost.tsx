@@ -4,13 +4,13 @@ import postService from "../Services/post_service";
 
 interface PostAPostProps {
   isLoggedIn: boolean;
-  userId: string;
 }
 
 const PostAPost: React.FC<PostAPostProps> = ({ isLoggedIn }) => {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [image, setImage] = useState<File | null>(null);
   const [error, setError] = useState("");
 
   // Redirect if the user is not logged in
@@ -19,26 +19,40 @@ const PostAPost: React.FC<PostAPostProps> = ({ isLoggedIn }) => {
     return null;
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-  
-    if (!title || !content) {
-      setError("Title and content are required.");
-      return;
-    }
-  
-    const postData = { title, content }; // ✅ Matches Swagger
-  
-    try {
-      await postService.createPost(postData);
-      navigate("/profile"); // ✅ Redirect after successful post
-    } catch {
-      setError("Failed to create post. Please try again.");
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setImage(e.target.files[0]); // ✅ Store selected file
     }
   };
-  
-  
 
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!title || !content) {
+        setError("Title and content are required.");
+        return;
+    }
+
+    const postData = new FormData();
+    postData.append("title", title);
+    postData.append("content", content);
+    if (image) {
+        postData.append("image", image);
+    }
+
+    console.log("📤 Sending Post Data:", Object.fromEntries(postData.entries())); // ✅ Debugging
+
+    try {
+        await postService.createPost(postData);
+        navigate("/profile");
+    } catch {
+        setError("Failed to create post. Please try again.");
+    }
+};
+
+
+  
   return (
     <div className="container">
       <h1>Create a Post</h1>
@@ -74,6 +88,7 @@ const PostAPost: React.FC<PostAPostProps> = ({ isLoggedIn }) => {
             id="image"
             className="form-control"
             accept="image/*"
+            onChange={handleImageChange} // ✅ Handle image selection
           />
         </div>
 

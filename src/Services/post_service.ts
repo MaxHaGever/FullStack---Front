@@ -15,7 +15,7 @@ const getAllPosts = () => {
   return apiClient.get("/posts");
 };
 
-const createPost = async (postData: { title: string; content: string }) => {
+const createPost = async (postData: FormData) => {
   const token = localStorage.getItem("accessToken");
 
   if (!token) {
@@ -23,15 +23,19 @@ const createPost = async (postData: { title: string; content: string }) => {
     return Promise.reject(new Error("Unauthorized: No token found."));
   }
 
-  console.log("📤 Sending Post Request:", { title: postData.title, content: postData.content });
+  console.log("📤 Sending Post Request with Headers:", {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "multipart/form-data",
+  });
 
-  return apiClient.post(`/posts`, postData, { // ✅ No userId in query
+  return apiClient.post(`/posts`, postData, {
     headers: {
-      "Authorization": `Bearer ${token}`, // ✅ Only the access token
-      "Content-Type": "application/json", // ✅ Must match Swagger
+      "Authorization": `Bearer ${token}`, // ✅ Ensure token is included
+      "Content-Type": "multipart/form-data",
     },
   });
 };
+
 
 
 

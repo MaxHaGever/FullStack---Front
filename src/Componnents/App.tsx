@@ -13,7 +13,7 @@ const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [username, setUsername] = useState<string | null>(null);
   const [loading, setLoading] = useState(true); // ✅ Prevent flashing
-  const [userId, setUserId] = useState<string | null>(null); // ✅ Add this state
+
 
 
   useEffect(() => {
@@ -28,7 +28,6 @@ const App: React.FC = () => {
       try {
         const response = await userService.getUserProfile();
         setIsLoggedIn(true);
-        setUserId(response.data._id); // ✅ Store the user ID
         setUsername(response.data.username);
         console.log("✅ Fetched user:", response.data.username);
       } catch (error) {
@@ -57,7 +56,7 @@ const App: React.FC = () => {
           <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/view-posts" element={<ViewPosts />} /> {/* New Route */}
-          <Route path="/post-a-post" element={<PostAPost isLoggedIn={isLoggedIn} userId={userId || ""} />} />
+          <Route path="/post-a-post" element={<PostAPost isLoggedIn={isLoggedIn}/>} />
         </Routes>
       </div>
     </Router>
