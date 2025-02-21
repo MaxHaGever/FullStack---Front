@@ -22,10 +22,9 @@ const PostAPost: React.FC<PostAPostProps> = ({ isLoggedIn }) => {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setImage(e.target.files[0]); // ✅ Store selected file
+      setImage(e.target.files[0]); // Store selected file
     }
   };
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +34,7 @@ const PostAPost: React.FC<PostAPostProps> = ({ isLoggedIn }) => {
         return;
     }
 
-    const username = localStorage.getItem("username"); // ✅ Retrieve username from localStorage
+    const username = localStorage.getItem("username"); // Retrieve username from localStorage
 
     if (!username) {
         console.error("❌ Missing username in localStorage");
@@ -46,46 +45,48 @@ const PostAPost: React.FC<PostAPostProps> = ({ isLoggedIn }) => {
     const postData = new FormData();
     postData.append("title", title);
     postData.append("content", content);
-    postData.append("username", username); // ✅ Add username to the post data
+    postData.append("username", username); // Add username to the post data
     if (image) {
         postData.append("image", image);
     }
 
-    console.log("📤 Sending Post Data:", Object.fromEntries(postData.entries())); // ✅ Debugging
+    console.log("📤 Sending Post Data:", Object.fromEntries(postData.entries())); // Debugging
 
     try {
         await postService.createPost(postData);
-        navigate("/view-posts"); // ✅ Redirect to the View Posts page instead of Profile
+        navigate("/view-posts"); // Redirect to the View Posts page instead of Profile
     } catch {
         setError("Failed to create post. Please try again.");
     }
 };
 
-
-
-
-  
   return (
-    <div className="container">
-      <h1>Create a Post</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label htmlFor="title" className="form-label">Post Title</label>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <form 
+        onSubmit={handleSubmit}
+        className="w-full max-w-md bg-white shadow-lg rounded-lg p-6"
+      >
+        <h1 className="text-2xl font-bold text-center mb-6">Create a Post</h1>
+
+        {/* Post Title Field */}
+        <div className="mb-4">
+          <label className="block text-gray-700">Post Title:</label>
           <input
             type="text"
             id="title"
-            className="form-control"
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
           />
         </div>
 
-        <div className="mb-3">
-          <label htmlFor="content" className="form-label">Content</label>
+        {/* Content Field */}
+        <div className="mb-4">
+          <label className="block text-gray-700">Content:</label>
           <textarea
             id="content"
-            className="form-control"
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             value={content}
             onChange={(e) => setContent(e.target.value)}
             rows={5}
@@ -93,20 +94,26 @@ const PostAPost: React.FC<PostAPostProps> = ({ isLoggedIn }) => {
           ></textarea>
         </div>
 
-        <div className="mb-3">
-          <label htmlFor="image" className="form-label">Post Image (optional)</label>
+        {/* Image Upload Field */}
+        <div className="mb-4">
+          <label className="block text-gray-700">Post Image (optional):</label>
           <input
             type="file"
             id="image"
-            className="form-control"
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             accept="image/*"
-            onChange={handleImageChange} // ✅ Handle image selection
+            onChange={handleImageChange}
           />
         </div>
 
-        {error && <p className="text-danger">{error}</p>}
+        {/* Error Message */}
+        {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
 
-        <button type="submit" className="btn btn-primary">
+        {/* Submit Button */}
+        <button 
+          type="submit" 
+          className="w-full mt-6 bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition"
+        >
           Submit Post
         </button>
       </form>

@@ -37,7 +37,6 @@ const ProfilePage = () => {
     const fetchUserProfile = async () => {
       try {
         const response = await userService.getUserProfile();
-        console.log("User fetched:", response.data); // Debug the full user data
         setUser(response.data);
         setNewUsername(response.data.username);
         setNewEmail(response.data.email);
@@ -48,7 +47,6 @@ const ProfilePage = () => {
     const fetchMyPosts = async () => {
       try {
         const response = await postService.getMyPosts();
-        console.log("📥 My Posts:", response.data);
         setMyPosts(response.data);
       } catch (error) {
         setError("Failed to load your posts.");
@@ -60,7 +58,7 @@ const ProfilePage = () => {
   }, []);
 
   const handlePostAPost = () => {
-    navigate("/post-a-post"); // ✅ Ensure this is the correct route
+    navigate("/post-a-post"); // Ensure this is the correct route
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,26 +105,23 @@ const ProfilePage = () => {
 
   const handleDeletePost = async (postId: string) => {
     if (!window.confirm("Are you sure you want to delete this post? This action cannot be undone.")) {
-        return;
+      return;
     }
 
     try {
-        await postService.deletePost(postId);
-        setMyPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
-        alert("Post deleted successfully!");
+      await postService.deletePost(postId);
+      setMyPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
+      alert("Post deleted successfully!");
     } catch (error) {
-        console.error("❌ Failed to delete post:", error);
-        alert("Failed to delete post.");
+      console.error("❌ Failed to delete post:", error);
+      alert("Failed to delete post.");
     }
-};
-
+  };
 
   const handleUpdatePost = async () => {
     if (!editingPost) return;
 
     try {
-      console.log(`📤 Sending update request for Post ID: ${editingPost.id}`);
-
       const formData = new FormData();
       formData.append("title", editingPost.title);
       formData.append("content", editingPost.content);
@@ -135,15 +130,11 @@ const ProfilePage = () => {
         formData.append("image", selectedPostImage);
       }
 
-      console.log("📤 Form Data Sent:", Object.fromEntries(formData.entries())); // ✅ Debugging
-
       const response = await postService.updatePostWithImage(editingPost.id, formData);
 
       if (!response || !response.data) {
         throw new Error("No response from server");
       }
-
-      console.log(`✅ Post updated in backend:`, response.data);
 
       setMyPosts((prevPosts) =>
         prevPosts.map((post) =>
@@ -165,175 +156,154 @@ const ProfilePage = () => {
       console.error("❌ Backend failed to update post:", error);
       alert("Failed to update post.");
     }
-};
-
-
-
-
-
-  
+  };
 
   return (
-    <div style={{ 
-      display: "flex", justifyContent: "center", alignItems: "center", 
-      alignContent: "center",
-      flexDirection: "column",
-      }}>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      {/* Profile Section */}
       <form
         onSubmit={(e) => e.preventDefault()}
-        style={{
-          width: "400px",
-          padding: "10px",
-          margin: "10px",
-          backgroundColor: "#C1BAAC",
-        }}
+        className="w-full max-w-md bg-white shadow-lg rounded-lg p-6 mb-8"
       >
-        <h1 style={{ textAlign: "center" }}>Profile</h1>
+        <h1 className="text-2xl font-bold text-center mb-6">Profile</h1>
 
         {/* Avatar */}
-        <div style={{ textAlign: "center" }}>
+        <div className="flex justify-center items-center mb-4">
           <img
             src={fixAvatarUrl(user.avatar)} // Use helper function to fix the avatar URL
             alt="User Avatar"
-            style={{ width: "150px", height: "150px", borderRadius: "50%" }}
+            className="w-32 h-32 rounded-full border border-gray-300"
           />
-          <input ref={inputFile} type="file" onChange={handleFileChange} style={{
-            display: "none",
-          }} />
+          <input ref={inputFile} type="file" onChange={handleFileChange} className="hidden" />
         </div>
-        <FontAwesomeIcon icon={faImage} size='2x' onClick={() => inputFile.current?.click()} style={{
-            cursor: "pointer",
-            justifyContent: "center",
-            display: "flex",
-            margin: "auto",
-            marginTop: "10px",
-        }}/>
+        <FontAwesomeIcon
+          icon={faImage}
+          size="2x"
+          onClick={() => inputFile.current?.click()}
+          className="text-gray-500 cursor-pointer hover:text-gray-700 transition"
+        />
+        
         {/* Username */}
-        <div className="mb-3">
-          <label htmlFor="username" className="form-label">Username:</label>
+        <div className="mb-4">
+          <label htmlFor="username" className="block text-gray-700">Username:</label>
           <input
             type="text"
             value={newUsername}
             onChange={(e) => setNewUsername(e.target.value)}
-            className="form-control"
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             id="username"
           />
         </div>
 
         {/* Email */}
-        <div className="mb-3">
-          <label htmlFor="email" className="form-label">Email:</label>
+        <div className="mb-4">
+          <label htmlFor="email" className="block text-gray-700">Email:</label>
           <input
             type="email"
             value={newEmail}
             onChange={(e) => setNewEmail(e.target.value)}
-            className="form-control"
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             id="email"
           />
         </div>
 
         {/* Password */}
-        <div className="mb-3">
-          <label htmlFor="password" className="form-label">New Password:</label>
+        <div className="mb-4">
+          <label htmlFor="password" className="block text-gray-700">New Password:</label>
           <input
             type="password"
             placeholder="Enter new password"
             onChange={(e) => setNewPassword(e.target.value)}
-            className="form-control"
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             id="password"
           />
         </div>
 
         {/* Update Button */}
-        <div style={{ textAlign: "center" }}>
-          <button onClick={handleUpdateProfile} className="btn btn-dark" style={{
-            marginBottom: "10px",
-            width: "50%",
-          }}>Update Profile</button>
+        <div className="text-center">
+          <button
+            onClick={handleUpdateProfile}
+            className="w-full mt-6 bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition"
+          >
+            Update Profile
+          </button>
         </div>
 
-        <div>
-                <button
-                    className="btn btn-dark"
-                    onClick={handlePostAPost}
-                    style={{
-                        width: "50%",
-                        marginTop: "10px",
-                        justifyContent: "center",
-                        display: "flex",
-                        margin: "auto",
-                    }}
-                >
-                    Post a Review
-                </button>
-            </div>
+        {/* Post a Review Button */}
+        <div className="mt-4">
+          <button
+            onClick={handlePostAPost}
+            className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition"
+          >
+            Post a Review
+          </button>
+        </div>
       </form>
-      <div style={{ width: "400px", padding: "10px", backgroundColor: "#C1BAAC", }}>
-      <h2 style={{
-          textAlign: "center",
-          marginBottom: "20px",
-          color: "#333",
-      }}>My Reviews</h2>
-        {error && <p className="text-danger">{error}</p>}
+
+      {/* My Reviews Section (Positioned Below the Profile Section) */}
+      <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-6">
+        <h2 className="text-xl font-bold text-center mb-6">My Reviews</h2>
+        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
         {myPosts.map((post) => (
-          <div key={post._id} className="post-card" style={{ backgroundColor: "#fff", padding: "10px", borderRadius: "5px", marginBottom: "10px" }}>
+          <div key={post._id} className="bg-white shadow-lg rounded-lg p-4 mb-4">
             {editingPost && editingPost.id === post._id ? (
               <>
                 <input
                   type="text"
                   value={editingPost.title}
                   onChange={(e) => setEditingPost({ ...editingPost, title: e.target.value })}
-                  className="form-control"
+                  className="w-full p-2 mb-2 border rounded-md"
                 />
                 <textarea
                   value={editingPost.content}
                   onChange={(e) => setEditingPost({ ...editingPost, content: e.target.value })}
-                  className="form-control"
+                  className="w-full p-2 mb-2 border rounded-md"
                   rows={3}
                 />
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  onChange={(e) => setSelectedPostImage(e.target.files?.[0] || null)} 
-                  className="form-control"
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setSelectedPostImage(e.target.files?.[0] || null)}
+                  className="w-full p-2 mb-2 border rounded-md"
                 />
-                <button onClick={handleUpdatePost} className="btn btn-success" style={{ marginTop: "5px" }}>
+                <button
+                  onClick={handleUpdatePost}
+                  className="w-full bg-blue-600 text-white py-3 rounded-md mt-2 hover:bg-blue-700 transition"
+                >
                   Save
                 </button>
-                <button onClick={() => setEditingPost(null)} className="btn btn-secondary" style={{ marginTop: "5px", marginLeft: "5px" }}>
+                <button
+                  onClick={() => setEditingPost(null)}
+                  className="w-full bg-gray-500 text-white py-3 rounded-md mt-2 hover:bg-gray-700 transition"
+                >
                   Cancel
                 </button>
               </>
             ) : (
               <>
-              <div style={{ 
-                textAlign: "center",
-                alignContent: "center",
-                justifyContent: "center",
-                display: "flex",
-                flexDirection: "column",}}>
-                <h3>{post.title}</h3>
+                <h3 className="text-lg font-semibold">{post.title}</h3>
                 <p>{post.content}</p>
-                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginBottom: "10px" }}>
-                {post.image && <img src={`http://localhost:3004${post.image}`} alt="Post" style={{ maxWidth: "150px", maxHeight: "400x"}} />}
+                {post.image && <img src={`http://localhost:3004${post.image}`} alt="Post" className="mt-2 max-w-full h-auto" />}
+                <div className="mt-4 flex justify-between">
+                  <button
+                    onClick={() => handleEditPost(post._id, post.title, post.content)}
+                    className="bg-blue-600 text-white py-3 px-4 rounded-md w-full hover:bg-blue-700 transition"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeletePost(post._id)}
+                    className="bg-red-600 text-white py-3 px-4 rounded-md w-full hover:bg-red-700 transition"
+                  >
+                    Delete
+                  </button>
                 </div>
-                <button onClick={() => handleEditPost(post._id, post.title, post.content)} className="btn btn-dark" style={{ marginTop: "5px" }}>
-                  Edit Post
-                </button>
-                <button
-  onClick={() => handleDeletePost(post._id)}
-  className="btn btn-danger"
-  style={{ marginTop: "5px" }}
->
-  Delete Post
-</button>
-</div>
               </>
             )}
           </div>
         ))}
       </div>
-      </div>
+    </div>
   );
 };
 

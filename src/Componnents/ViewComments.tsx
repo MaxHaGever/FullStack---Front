@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import commentService from "../Services/comment_service"; // ✅ Import comment service
+import commentService from "../Services/comment_service";
 
 interface Comment {
-    _id: string;
-    text: string;
-    sender: { username: string }; // ✅ Change sender type
-  }
-  
-  
+  _id: string;
+  text: string;
+  sender: { username: string };
+}
 
 const ViewComments: React.FC = () => {
-  const { postId } = useParams<{ postId: string }>(); // ✅ Get postId from URL
+  const { postId } = useParams<{ postId: string }>();
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState<string>("");
   const [error, setError] = useState<string>("");
@@ -21,7 +19,6 @@ const ViewComments: React.FC = () => {
       try {
         if (postId) {
           const response = await commentService.getCommentsByPost(postId);
-          console.log("📥 Fetched Comments:", response.data);
           setComments(response.data);
         } else {
           setError("Post ID is undefined.");
@@ -36,7 +33,7 @@ const ViewComments: React.FC = () => {
 
   const handleDeleteComment = async (commentId: string) => {
     if (!window.confirm("Are you sure you want to delete this comment?")) return;
-  
+
     try {
       await commentService.deleteComment(commentId);
       setComments((prevComments) => prevComments.filter((comment) => comment._id !== commentId));
@@ -51,80 +48,72 @@ const ViewComments: React.FC = () => {
       setError("Comment text is required.");
       return;
     }
-  
-    const token = localStorage.getItem("accessToken"); // ✅ Get JWT token
+
+    const token = localStorage.getItem("accessToken");
     if (!token) {
-      console.error("❌ Missing authentication token");
       setError("You must be logged in to comment.");
       return;
     }
-  
+
     try {
-      console.log("📤 Sending Comment Data:", { postId, text: newComment });
-  
-      const response = await commentService.addComment(postId, newComment, token); // ✅ Send token
-  
-      console.log("✅ Comment Created Successfully:", response.data);
-  
-      setComments([...comments, response.data]); // ✅ Update comment list
-      setNewComment(""); // ✅ Clear input after submitting
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        console.error("❌ Error adding comment:", err.message);
-      } else {
-        console.error("❌ Error adding comment:", err);
-      }
+      const response = await commentService.addComment(postId, newComment, token);
+      setComments([...comments, response.data]);
+      setNewComment("");
+    } catch (err) {
       setError("Failed to add comment.");
+      console.error("❌ Error adding comment:", err);
     }
   };
-  
-  
-  
-  
-  
-  
-  
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minHeight: "100vh" }}>
-      <h1 style={{ marginBottom: "20px", color: "#333" }}>Comments</h1>
+    <div className="min-h-screen flex flex-col items-center bg-gray-100 px-6">
+      
+      {/* Title */}
+      <h1 className="text-2xl font-semibold text-gray-800 mb-6">Comments</h1>
 
-      {error && <p className="text-danger">{error}</p>}
+      {/* Error Message */}
+      {error && <p className="text-red-500">{error}</p>}
 
-      <div className="comment-list" style={{ width: "300%", maxWidth: "600px" }}>
+      {/* Comment List (Now Much Wider) */}
+      <div className="w-full max-w-5xl bg-white shadow-md rounded-lg p-6">
         {comments.length === 0 ? (
-          <p style={{ textAlign: "center", fontSize: "18px", color: "#555"}}>No comments yet. Be the first to comment!</p>
+          <p className="text-center text-gray-500">No comments yet. Be the first to comment!</p>
         ) : (
           comments.map((comment) => (
-            <div key={comment._id} className="comment-card" style={{
-              backgroundColor: "#fff",
-              padding: "15px",
-              marginBottom: "10px",
-              borderRadius: "8px",
-              boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
-            }}>
-              <p style={{ fontWeight: "bold", marginBottom: "5px" }}>{comment.sender?.username}</p>
-              <p style={{ color: "#555", marginBottom: "5px" }}>{comment.text}</p>
-              {comment.sender?.username === localStorage.getItem("username") && ( // ✅ Only show delete button for own comments
-                <button onClick={() => handleDeleteComment(comment._id)} className="btn btn-danger" style={{ marginTop: "5px" }}>Delete</button>
+            <div key={comment._id} className="bg-gray-100 p-4 rounded-lg mb-3 shadow-sm">
+              <p className="font-semibold text-gray-800">{comment.sender?.username}</p>
+              <p className="text-gray-700">{comment.text}</p>
+              {comment.sender?.username === localStorage.getItem("username") && (
+                <button
+                  onClick={() => handleDeleteComment(comment._id)}
+                  className="mt-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+                >
+                  Delete
+                </button>
               )}
             </div>
           ))
         )}
       </div>
 
-      {/* ✅ Add Comment Section */}
-      <div style={{ width: "300%", maxWidth: "600px", marginTop: "20px" }}>
-        <h3>Add a Comment</h3>
+      {/* Add Comment Section (Now Much Wider) */}
+      <div className="w-full max-w-5xl bg-white shadow-md rounded-lg p-6 mt-6">
+        <h3 className="text-lg font-semibold text-gray-800">Add a Comment</h3>
         <textarea
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           placeholder="Write your comment..."
-          className="form-control"
-          rows={3}
+          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+          rows={4}
         ></textarea>
-        <button onClick={handleAddComment} className="btn btn-dark" style={{ marginTop: "10px" }}>Submit</button>
+        <button
+          onClick={handleAddComment}
+          className="w-full mt-4 bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition"
+        >
+          Submit
+        </button>
       </div>
+
     </div>
   );
 };

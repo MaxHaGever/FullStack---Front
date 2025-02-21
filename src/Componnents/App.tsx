@@ -1,21 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "./HomePage";
 import Navbar from "./NavBar";
 import RegistrationForm from "./RegistrationForm";
 import Login from "./Login";
 import ProfilePage from "./ProfilePage";
-import ViewPosts from "./ViewPosts"; // Import the ViewPosts component
+import ViewPosts from "./ViewPosts";
 import userService from "../Services/user_service";
-import PostAPost from "./PostAPost"; // Import the PostAPost component
+import PostAPost from "./PostAPost";
 import ViewComments from "./ViewComments";
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [username, setUsername] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true); // ✅ Prevent flashing
-
-
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkLoginStatus = async () => {
@@ -25,7 +23,7 @@ const App: React.FC = () => {
         setLoading(false);
         return;
       }
-  
+
       try {
         const response = await userService.getUserProfile();
         setIsLoggedIn(true);
@@ -38,26 +36,31 @@ const App: React.FC = () => {
         setLoading(false);
       }
     };
-  
+
     checkLoginStatus();
   }, []);
-  
 
   if (loading) {
-    return <div style={{ textAlign: "center", marginTop: "50px", fontSize: "20px" }}>Loading...</div>; // ✅ Show loading message
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-200 text-lg font-semibold">
+        Loading...
+      </div>
+    );
   }
 
   return (
     <Router>
       <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} username={username} />
-      <div style={{ backgroundColor: "#C1BAAC", minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
+      
+      {/* FIX: Now Components Are Not Force-Centered */}
+      <div className="bg-gray-100 min-h-screen px-6 py-12">
         <Routes>
           <Route path="/" element={isLoggedIn ? <Navigate to="/profile" /> : <HomePage />} />
           <Route path="/register" element={<RegistrationForm />} />
           <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/view-posts" element={<ViewPosts />} /> {/* New Route */}
-          <Route path="/post-a-post" element={<PostAPost isLoggedIn={isLoggedIn}/>} />
+          <Route path="/view-posts" element={<ViewPosts />} />
+          <Route path="/post-a-post" element={<PostAPost isLoggedIn={isLoggedIn} />} />
           <Route path="/comments/:postId" element={<ViewComments />} />
         </Routes>
       </div>

@@ -6,11 +6,11 @@ interface Post {
   _id: string;
   title: string;
   content: string;
-  senderUsername: string; // ✅ Store username directly in the post
+  senderUsername: string;
   image?: string;
-  commentCount?: number; // ✅ New field to store comment count
-    likes: number;
-    likedUsernames?: string[]; // ✅ Store liked usernames
+  commentCount?: number;
+  likes: number;
+  likedUsernames?: string[];
 }
 
 const ViewPosts: React.FC = () => {
@@ -22,7 +22,6 @@ const ViewPosts: React.FC = () => {
     const fetchPosts = async () => {
       try {
         const response = await postService.getAllPosts();
-        console.log("📥 Fetched Posts:", response.data);
         setPosts(response.data);
       } catch (err) {
         setError("Failed to load posts.");
@@ -34,71 +33,80 @@ const ViewPosts: React.FC = () => {
 
   const handleToggleLike = async (postId: string) => {
     try {
-        const response = await postService.toggleLike(postId);
-        setPosts(posts.map(post =>
-            post._id === postId ? { ...post, likes: response.data.likes } : post
-        ));
+      const response = await postService.toggleLike(postId);
+      setPosts(posts.map(post =>
+        post._id === postId ? { ...post, likes: response.data.likes } : post
+      ));
     } catch (err) {
-        console.error("❌ Error toggling like:", err);
+      console.error("❌ Error toggling like:", err);
     }
-};
+  };
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", flexDirection: "column" }}>
-      <h1 style={{ textAlign: "center", marginBottom: "20px", color: "#333" }}>All Reviews</h1>
+    <div className="flex flex-col items-center min-h-screen bg-gray-50 py-10 px-4">
+      <h1 className="text-4xl font-bold text-gray-900 mb-6">All Reviews</h1>
 
-      {error && <p className="text-danger">{error}</p>}
-
-      <div className="post-list" style={{ width: "100%", maxWidth: "900px" }}> {/* ✅ Wider Cards */}
+      {error && <p className="text-red-500">{error}</p>}
+        
+      <div className="w-full max-w-3xl space-y-8">
         {posts.length === 0 ? (
-          <p style={{ textAlign: "center", fontSize: "18px", color: "#555" }}>No posts available yet.</p>
+          <p className="text-lg text-gray-600 text-center">No posts available yet.</p>
         ) : (
           posts.map((post) => {
             const imageUrl = post.image ? `http://localhost:3004${post.image}` : null;
-            console.log(`🖼️ Post ID: ${post._id}, Image URL:`, imageUrl);
 
             return (
-              <div key={post._id} className="post-card" style={{
-                backgroundColor: "#fff",
-                padding: "20px",
-                marginBottom: "20px",
-                borderRadius: "10px",
-                boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-                textAlign: "center", // ✅ Centered content
-              }}>
-                {/* ✅ Image is now at the top, smaller size */}
+              <div
+                key={post._id}
+                className="bg-white shadow-lg rounded-xl p-6 flex flex-col items-center text-center border border-gray-200"
+              >
+                {/* 📌 Image at the top, centered */}
                 {imageUrl && (
                   <img
                     src={imageUrl}
                     alt="Post"
-                    style={{ width: "100%", maxHeight: "400px", maxWidth: "150px", objectFit: "cover", borderRadius: "8px", marginBottom: "10px" }}
+                    className="w-56 h-auto object-cover rounded-md mb-4"
                     onError={(e) => {
-                      console.error(`❌ Failed to load image for post ${post._id}:`, e);
                       (e.target as HTMLImageElement).style.display = "none";
                     }}
                   />
                 )}
 
-                <h2 style={{ color: "#222", fontSize: "22px", marginBottom: "10px" }}>{post.title}</h2>
-                <p style={{ color: "#222", fontSize: "16px", marginBottom: "10px" }}>{post.content}</p>
 
-                {/* ✅ Display username centered */}
-                <p style={{ fontStyle: "italic", color: "#777", marginBottom: "15px" }}>
-                  By: {post.senderUsername || "Unknown User"}
+                {/* 📌 Post Title */}
+                <h2 className="text-2xl font-semibold text-gray-900">{post.title}</h2>
+
+                {/* 📌 Post Content */}
+                <p className="text-gray-700 text-md mt-3 leading-relaxed">{post.content}</p>
+
+                {/* 📌 Username */}
+                <p className="text-gray-500 italic mt-3">
+                  By: <span className="font-medium text-gray-800">{post.senderUsername || "Unknown User"}</span>
                 </p>
+
+                {/* 📌 Likes Section */}
                 {Array.isArray(post.likedUsernames) && post.likedUsernames.length > 0 ? (
-  <p style={{ fontSize: "14px", color: "#777", marginBottom: "10px" }}>
-    ❤️ Liked by: {post.likedUsernames.join(", ")}
-  </p>
-) : (
-  <p style={{ fontSize: "14px", color: "#777", marginBottom: "10px" }}>
-    No likes yet.
-  </p>
-)}
-                {/* ✅ Display comment count and likes */}
-                <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
-                <button onClick={() => navigate(`/comments/${post._id}`)} className="btn btn-dark">({post.commentCount || 0}) Comments</button> {/* ✅ Navigate to comments page */}
-                  <button className="btn btn-dark" onClick={() => handleToggleLike(post._id)} >👍 {post.likes} Likes</button>
+                  <p className="text-sm text-gray-600 mt-2">
+                    ❤️ Liked by: {post.likedUsernames.join(", ")}
+                  </p>
+                ) : (
+                  <p className="text-sm text-gray-500 mt-2">No likes yet.</p>
+                )}
+
+                {/* 📌 Buttons for Comments & Likes */}
+                <div className="flex justify-center gap-4 mt-5">
+                  <button
+                    onClick={() => navigate(`/comments/${post._id}`)}
+                    className="px-5 py-2 bg-gray-800 text-white font-medium rounded-lg hover:bg-gray-900 transition flex items-center gap-2"
+                  >
+                    💬 {post.commentCount || 0} Comments
+                  </button>
+                  <button
+                    className="px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+                    onClick={() => handleToggleLike(post._id)}
+                  >
+                    👍 {post.likes} Likes
+                  </button>
                 </div>
               </div>
             );

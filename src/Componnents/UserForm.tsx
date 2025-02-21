@@ -1,17 +1,17 @@
-import { FC, useState, useRef } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import pngegg from '../assets/pngegg.png';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faImage } from '@fortawesome/free-solid-svg-icons';
-import userService from '../Services/user_service'; // ✅ Import User interface
+import { FC, useState, useRef } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import pngegg from "../assets/pngegg.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faImage } from "@fortawesome/free-solid-svg-icons";
+import userService from "../Services/user_service";
 
-// Validation Schema
+// ✅ Validation Schema
 const UserSchema = z.object({
-  name: z.string().min(3, { message: 'Name must be at least 3 characters long' }),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters long' }),
-  email: z.string().email({ message: 'Invalid email' }),
+  name: z.string().min(3, { message: "Name must be at least 3 characters long" }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters long" }),
+  email: z.string().email({ message: "Invalid email" }),
 });
 
 type FormData = z.infer<typeof UserSchema>;
@@ -32,130 +32,120 @@ const UserForm: FC = () => {
 
   const onSubmit = async (data: FormData) => {
     try {
-        const userPayload = {
-            username: data.name,
-            password: data.password,
-            email: data.email,
-        };
-  
-        console.log("📤 Sending Register Request:", userPayload);
-  
-        // Send registration request to the backend
-        const registerResponse = await userService.register(userPayload);
-        console.log("✅ Register Response:", registerResponse.data);
-  
-        const userId = registerResponse.data._id ?? "";
-  
-        if (!userId) {
-            console.error("❌ Error: User ID is missing!");
-            alert("Registration failed. Please try again.");
-            return;
-        }
-  
-        let imageUrl = "";
-        // Step 1: Upload the image if selected
-        if (selectedImage) {
-            console.log("📤 Sending Image Upload Request:", selectedImage);
-            const uploadResponse = await userService.uploadImage(selectedImage);
-            imageUrl = uploadResponse.data.url;
-            console.log("✅ Image Uploaded:", imageUrl);
-            console.log("imageUrl", imageUrl);
-        }
-  
-        // Step 2: Ensure the avatar URL is properly formatted
-        // Only prepend base URL if not already included
-        console.log("imageUrl", imageUrl);
-          // Step 3: Update profile with the avatar URL if it's set
-        console.log("imageUrl", imageUrl);
-        if (imageUrl) {
-            await userService.updateProfile({ userId, avatar: imageUrl });
-            console.log(`✅ User ${registerResponse.data.username} profile updated with avatar: ${imageUrl}`);
-        }
-  
-        alert("Registration successful!");
-    } catch (error: unknown) {
-        console.error("❌ Error during registration:", error);
-        alert("An unknown error occurred.");
+      const userPayload = {
+        username: data.name,
+        password: data.password,
+        email: data.email,
+      };
+
+      console.log("📤 Sending Register Request:", userPayload);
+
+      const registerResponse = await userService.register(userPayload);
+      console.log("✅ Register Response:", registerResponse.data);
+
+      const userId = registerResponse.data._id ?? "";
+      if (!userId) {
+        console.error("❌ Error: User ID is missing!");
+        alert("Registration failed. Please try again.");
+        return;
+      }
+
+      let imageUrl = "";
+      if (selectedImage) {
+        console.log("📤 Uploading Image:", selectedImage);
+        const uploadResponse = await userService.uploadImage(selectedImage);
+        imageUrl = uploadResponse.data.url;
+        console.log("✅ Image Uploaded:", imageUrl);
+      }
+
+      if (imageUrl) {
+        await userService.updateProfile({ userId, avatar: imageUrl });
+        console.log(`✅ Updated Profile for ${registerResponse.data.username} with avatar: ${imageUrl}`);
+      }
+
+      alert("Registration successful!");
+    } catch (error) {
+      console.error("❌ Registration Error:", error);
+      alert("An unknown error occurred.");
     }
   };
-  
-  
-
 
   return (
-    <div style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '100vh'
-    }}>
-      <form onSubmit={handleSubmit(onSubmit)}
-        style={{
-          width: '400px',
-          padding: '10px',
-          margin: '10px',
-          backgroundColor: '#C1BAAC',
-        }}>
-        <h1 style={{ textAlign: 'center' }}>Registration Form</h1>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <form 
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-full max-w-md bg-white shadow-lg rounded-lg p-6"
+      >
+        <h1 className="text-2xl font-bold text-center mb-6">Register</h1>
 
         {/* Username Field */}
-        <div className='mb-3'>
-          <label htmlFor='name' className='form-label'>UserName:</label>
-          <input {...register('name')} type='text' className='form-control' id='name' />
-          {errors.name && <p className='text-danger'>{errors.name.message}</p>}
+        <div className="mb-4">
+          <label className="block text-gray-700">Username:</label>
+          <input 
+            {...register("name")} 
+            type="text" 
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
         </div>
 
         {/* Email Field */}
-        <div className='mb-3'>
-          <label htmlFor='email' className='form-label'>Email:</label>
-          <input {...register('email')} type='text' className='form-control' id='email' />
-          {errors.email && <p className='text-danger'>{errors.email.message}</p>}
+        <div className="mb-4">
+          <label className="block text-gray-700">Email:</label>
+          <input 
+            {...register("email")} 
+            type="email" 
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
         </div>
 
         {/* Password Field */}
-        <div className='mb-3'>
-          <label htmlFor='password' className='form-label'>Password:</label>
-          <input {...register('password')} type='password' className='form-control' id='password' />
-          {errors.password && <p className='text-danger'>{errors.password.message}</p>}
+        <div className="mb-4">
+          <label className="block text-gray-700">Password:</label>
+          <input 
+            {...register("password")} 
+            type="password" 
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
         </div>
 
-        {/* File Input */}
+        {/* File Input (Hidden) */}
         <input
           ref={inputFile}
           type="file"
           accept="image/png, image/jpeg"
-          style={{ display: 'none' }}
+          className="hidden"
           onChange={onFileSelected}
         />
 
         {/* Image Preview */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          width: '200px',
-          height: '200px',
-          margin: 'auto'
-        }}>
-          <img src={selectedImage ? URL.createObjectURL(selectedImage) : pngegg} alt="placeholder" />
+        <div className="flex justify-center my-4">
+          <img 
+            src={selectedImage ? URL.createObjectURL(selectedImage) : pngegg} 
+            alt="placeholder" 
+            className="w-32 h-32 rounded-full border border-gray-300"
+          />
         </div>
 
         {/* Image Upload Button */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          marginTop: '10px'
-        }}>
-          <FontAwesomeIcon icon={faImage} size='2x' onClick={() => inputFile.current?.click()} />
+        <div className="flex justify-center">
+          <FontAwesomeIcon 
+            icon={faImage} 
+            size="2x" 
+            className="text-gray-500 cursor-pointer hover:text-gray-700 transition"
+            onClick={() => inputFile.current?.click()} 
+          />
         </div>
 
         {/* Submit Button */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          marginTop: '10px'
-        }}>
-          <button type='submit' className='btn btn-dark'>Register</button>
-        </div>
+        <button 
+          type="submit" 
+          className="w-full mt-6 bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition"
+        >
+          Register
+        </button>
       </form>
     </div>
   );
