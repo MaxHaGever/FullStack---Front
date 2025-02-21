@@ -9,6 +9,7 @@ interface Post {
   senderUsername: string; // ✅ Store username directly in the post
   image?: string;
   commentCount?: number; // ✅ New field to store comment count
+    likes: number;
 }
 
 const ViewPosts: React.FC = () => {
@@ -29,6 +30,17 @@ const ViewPosts: React.FC = () => {
     };
     fetchPosts();
   }, []);
+
+  const handleToggleLike = async (postId: string) => {
+    try {
+        const response = await postService.toggleLike(postId);
+        setPosts(posts.map(post =>
+            post._id === postId ? { ...post, likes: response.data.likes } : post
+        ));
+    } catch (err) {
+        console.error("❌ Error toggling like:", err);
+    }
+};
 
   return (
     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", flexDirection: "column" }}>
@@ -76,7 +88,7 @@ const ViewPosts: React.FC = () => {
 
                 <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
                 <button onClick={() => navigate(`/comments/${post._id}`)} className="btn btn-dark">({post.commentCount || 0}) Comments</button> {/* ✅ Navigate to comments page */}
-                  <button className="btn btn-dark">Like</button>
+                  <button className="btn btn-dark" onClick={() => handleToggleLike(post._id)} >👍 {post.likes} Likes</button>
                 </div>
               </div>
             );

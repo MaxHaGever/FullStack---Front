@@ -109,6 +109,19 @@ const updatePost = async (postId: string, updatedData: { title?: string; content
   });
 };
 
+const toggleLike = async (postId: string) => {
+  const token = localStorage.getItem("accessToken"); // ✅ Ensure token is sent
+  if (!token) {
+      throw new Error("Unauthorized: No token found");
+  }
+
+  return apiClient.post(`/posts/${postId}/like`, {}, {
+      headers: {
+          Authorization: `Bearer ${token}`,  // ✅ Send token in header
+          "Content-Type": "application/json",
+      }
+  });
+};
 
 
 // Delete post
@@ -136,5 +149,6 @@ export default {
     updatePost,
     deletePost,
     getMyPosts,
-    updatePostWithImage
+    updatePostWithImage,
+    toggleLike
 };
