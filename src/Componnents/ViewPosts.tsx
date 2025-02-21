@@ -8,6 +8,7 @@ interface Post {
   content: string;
   senderUsername: string; // ✅ Store username directly in the post
   image?: string;
+  commentCount?: number; // ✅ New field to store comment count
 }
 
 const ViewPosts: React.FC = () => {
@@ -74,7 +75,7 @@ const ViewPosts: React.FC = () => {
                 </p>
 
                 <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
-                <button onClick={() => navigate(`/comments/${post._id}`)} className="btn btn-dark">View Comments</button> {/* ✅ Navigate to comments page */}
+                <button onClick={() => navigate(`/comments/${post._id}`)} className="btn btn-dark">({post.commentCount || 0}) Comments</button> {/* ✅ Navigate to comments page */}
                   <button className="btn btn-dark">Like</button>
                 </div>
               </div>
