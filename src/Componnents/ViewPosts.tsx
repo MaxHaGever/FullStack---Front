@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import postService from "../Services/post_service";
+import { useNavigate } from "react-router-dom";
 
 interface Post {
   _id: string;
@@ -12,6 +13,7 @@ interface Post {
 const ViewPosts: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [error, setError] = useState<string>("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -72,7 +74,7 @@ const ViewPosts: React.FC = () => {
                 </p>
 
                 <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
-                  <button className="btn btn-dark">Comment</button>
+                <button onClick={() => navigate(`/comments/${post._id}`)} className="btn btn-dark">View Comments</button> {/* ✅ Navigate to comments page */}
                   <button className="btn btn-dark">Like</button>
                 </div>
               </div>

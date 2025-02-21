@@ -8,6 +8,7 @@ import ProfilePage from "./ProfilePage";
 import ViewPosts from "./ViewPosts"; // Import the ViewPosts component
 import userService from "../Services/user_service";
 import PostAPost from "./PostAPost"; // Import the PostAPost component
+import ViewComments from "./ViewComments";
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -57,6 +58,7 @@ const App: React.FC = () => {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/view-posts" element={<ViewPosts />} /> {/* New Route */}
           <Route path="/post-a-post" element={<PostAPost isLoggedIn={isLoggedIn}/>} />
+          <Route path="/comments/:postId" element={<ViewComments />} />
         </Routes>
       </div>
     </Router>
