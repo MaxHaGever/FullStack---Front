@@ -25,6 +25,10 @@ const Navbar: React.FC<NavbarProps> = ({ isLoggedIn, setIsLoggedIn, username }) 
     navigate("/profile"); // Navigate to the profile page when the button is clicked
   };
 
+  const handleViewsClick = () => {
+    navigate("/view-posts"); // Navigate to the profile page when the button is clicked
+  };
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-3">
       <div className="container-fluid">
@@ -61,6 +65,11 @@ const Navbar: React.FC<NavbarProps> = ({ isLoggedIn, setIsLoggedIn, username }) 
 
                 </li>
                 <li className="nav-item">
+                <button className="btn btn-outline-light" onClick={handleViewsClick} style={{
+                  marginRight: "10px",
+                }}>
+                    Views
+                  </button>
                 <button onClick={handleProfileClick} className="btn btn-outline-light" style={{
                     marginRight: "10px",
                   }} >
@@ -68,8 +77,7 @@ const Navbar: React.FC<NavbarProps> = ({ isLoggedIn, setIsLoggedIn, username }) 
                   </button>
                   <button className="btn btn-outline-light" onClick={handleLogout}>
                     Log Out
-                  </button>
-                  
+                  </button>                  
                 </li>
                 <li className="nav-item">
 

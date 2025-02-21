@@ -174,7 +174,11 @@ const ProfilePage = () => {
   
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+    <div style={{ 
+      display: "flex", justifyContent: "center", alignItems: "center", 
+      alignContent: "center",
+      flexDirection: "column",
+      }}>
       <form
         onSubmit={(e) => e.preventDefault()}
         style={{
@@ -264,8 +268,12 @@ const ProfilePage = () => {
                 </button>
             </div>
       </form>
-      <div>
-      <h2>My Reviews</h2>
+      <div style={{ width: "400px", padding: "10px", backgroundColor: "#C1BAAC", }}>
+      <h2 style={{
+          textAlign: "center",
+          marginBottom: "20px",
+          color: "#333",
+      }}>My Reviews</h2>
         {error && <p className="text-danger">{error}</p>}
         {myPosts.map((post) => (
           <div key={post._id} className="post-card" style={{ backgroundColor: "#fff", padding: "10px", borderRadius: "5px", marginBottom: "10px" }}>
@@ -298,9 +306,17 @@ const ProfilePage = () => {
               </>
             ) : (
               <>
+              <div style={{ 
+                textAlign: "center",
+                alignContent: "center",
+                justifyContent: "center",
+                display: "flex",
+                flexDirection: "column",}}>
                 <h3>{post.title}</h3>
                 <p>{post.content}</p>
-                {post.image && <img src={`http://localhost:3004${post.image}`} alt="Post" style={{ width: "100%", maxHeight: "200px" }} />}
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginBottom: "10px" }}>
+                {post.image && <img src={`http://localhost:3004${post.image}`} alt="Post" style={{ maxWidth: "150px", maxHeight: "400x"}} />}
+                </div>
                 <button onClick={() => handleEditPost(post._id, post.title, post.content)} className="btn btn-dark" style={{ marginTop: "5px" }}>
                   Edit Post
                 </button>
@@ -311,6 +327,7 @@ const ProfilePage = () => {
 >
   Delete Post
 </button>
+</div>
               </>
             )}
           </div>

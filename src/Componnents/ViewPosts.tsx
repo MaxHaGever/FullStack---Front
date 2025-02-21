@@ -28,67 +28,57 @@ const ViewPosts: React.FC = () => {
   }, []);
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
-      <div
-        style={{
-          width: "600px",
-          padding: "10px",
-          margin: "10px",
-          backgroundColor: "#C1BAAC",
-          borderRadius: "10px",
-          boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
-        }}
-      >
-        <h1 style={{ textAlign: "center" }}>All Posts</h1>
+    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", flexDirection: "column" }}>
+      <h1 style={{ textAlign: "center", marginBottom: "20px", color: "#333" }}>All Reviews</h1>
 
-        {error && <p className="text-danger">{error}</p>}
+      {error && <p className="text-danger">{error}</p>}
 
-        <div className="post-list">
-          {posts.length === 0 ? (
-            <p>No posts available yet.</p>
-          ) : (
-            posts.map((post) => {
-              const imageUrl = post.image ? `http://localhost:3004${post.image}` : null;
-              console.log(`🖼️ Post ID: ${post._id}, Image URL:`, imageUrl);
+      <div className="post-list" style={{ width: "100%", maxWidth: "900px" }}> {/* ✅ Wider Cards */}
+        {posts.length === 0 ? (
+          <p style={{ textAlign: "center", fontSize: "18px", color: "#555" }}>No posts available yet.</p>
+        ) : (
+          posts.map((post) => {
+            const imageUrl = post.image ? `http://localhost:3004${post.image}` : null;
+            console.log(`🖼️ Post ID: ${post._id}, Image URL:`, imageUrl);
 
-              return (
-                <div key={post._id} className="post-card" style={{
-                  backgroundColor: "#fff",
-                  padding: "15px",
-                  marginBottom: "15px",
-                  borderRadius: "8px",
-                  boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)"
-                }}>
-                  <h2 style={{ textAlign: "center", color: "#333" }}>{post.title}</h2>
-                  <p style={{ color: "#555" }}>{post.content}</p>
+            return (
+              <div key={post._id} className="post-card" style={{
+                backgroundColor: "#fff",
+                padding: "20px",
+                marginBottom: "20px",
+                borderRadius: "10px",
+                boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+                textAlign: "center", // ✅ Centered content
+              }}>
+                {/* ✅ Image is now at the top, smaller size */}
+                {imageUrl && (
+                  <img
+                    src={imageUrl}
+                    alt="Post"
+                    style={{ width: "100%", maxHeight: "400px", maxWidth: "150px", objectFit: "cover", borderRadius: "8px", marginBottom: "10px" }}
+                    onError={(e) => {
+                      console.error(`❌ Failed to load image for post ${post._id}:`, e);
+                      (e.target as HTMLImageElement).style.display = "none";
+                    }}
+                  />
+                )}
 
-                  {/* ✅ Display image if available */}
-                  {imageUrl && (
-                    <img
-                      src={imageUrl}
-                      alt="Post"
-                      style={{ width: "100%", maxHeight: "300px", objectFit: "cover", borderRadius: "5px" }}
-                      onError={(e) => {
-                        console.error(`❌ Failed to load image for post ${post._id}:`, e);
-                        (e.target as HTMLImageElement).style.display = "none";
-                      }}
-                    />
-                  )}
+                <h2 style={{ color: "#222", fontSize: "22px", marginBottom: "10px" }}>{post.title}</h2>
+                <p style={{ color: "#222", fontSize: "16px", marginBottom: "10px" }}>{post.content}</p>
 
-                  {/* ✅ Display username instead of user ID */}
-                  <p style={{ fontStyle: "italic", textAlign: "center" }}>
-                    By: {post.senderUsername || "Unknown User"}
-                  </p>
+                {/* ✅ Display username centered */}
+                <p style={{ fontStyle: "italic", color: "#777", marginBottom: "15px" }}>
+                  By: {post.senderUsername || "Unknown User"}
+                </p>
 
-                  <div style={{ display: "flex", justifyContent: "center", marginTop: "10px" }}>
-                    <button className="btn btn-dark" style={{ marginRight: "5px" }}>Comment</button>
-                    <button className="btn btn-dark">Like</button>
-                  </div>
+                <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
+                  <button className="btn btn-dark">Comment</button>
+                  <button className="btn btn-dark">Like</button>
                 </div>
-              );
-            })
-          )}
-        </div>
+              </div>
+            );
+          })
+        )}
       </div>
     </div>
   );

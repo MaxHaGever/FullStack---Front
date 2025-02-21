@@ -55,11 +55,12 @@ const PostAPost: React.FC<PostAPostProps> = ({ isLoggedIn }) => {
 
     try {
         await postService.createPost(postData);
-        navigate("/profile");
+        navigate("/view-posts"); // ✅ Redirect to the View Posts page instead of Profile
     } catch {
         setError("Failed to create post. Please try again.");
     }
 };
+
 
 
 
