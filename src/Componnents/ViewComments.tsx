@@ -34,6 +34,18 @@ const ViewComments: React.FC = () => {
     fetchComments();
   }, [postId]);
 
+  const handleDeleteComment = async (commentId: string) => {
+    if (!window.confirm("Are you sure you want to delete this comment?")) return;
+  
+    try {
+      await commentService.deleteComment(commentId);
+      setComments((prevComments) => prevComments.filter((comment) => comment._id !== commentId));
+    } catch (err) {
+      console.error("❌ Error deleting comment:", err);
+      alert("Failed to delete comment.");
+    }
+  };
+
   const handleAddComment = async () => {
     if (!newComment || !postId) {
       setError("Comment text is required.");
@@ -93,6 +105,9 @@ const ViewComments: React.FC = () => {
             }}>
               <p style={{ fontWeight: "bold", marginBottom: "5px" }}>{comment.sender?.username}</p>
               <p style={{ color: "#555", marginBottom: "5px" }}>{comment.text}</p>
+              {comment.sender?.username === localStorage.getItem("username") && ( // ✅ Only show delete button for own comments
+                <button onClick={() => handleDeleteComment(comment._id)} className="btn btn-danger" style={{ marginTop: "5px" }}>Delete</button>
+              )}
             </div>
           ))
         )}
