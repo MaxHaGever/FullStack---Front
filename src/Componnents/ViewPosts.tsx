@@ -10,6 +10,7 @@ interface Post {
   image?: string;
   commentCount?: number; // ✅ New field to store comment count
     likes: number;
+    likedUsernames?: string[]; // ✅ Store liked usernames
 }
 
 const ViewPosts: React.FC = () => {
@@ -85,7 +86,16 @@ const ViewPosts: React.FC = () => {
                 <p style={{ fontStyle: "italic", color: "#777", marginBottom: "15px" }}>
                   By: {post.senderUsername || "Unknown User"}
                 </p>
-
+                {Array.isArray(post.likedUsernames) && post.likedUsernames.length > 0 ? (
+  <p style={{ fontSize: "14px", color: "#777", marginBottom: "10px" }}>
+    ❤️ Liked by: {post.likedUsernames.join(", ")}
+  </p>
+) : (
+  <p style={{ fontSize: "14px", color: "#777", marginBottom: "10px" }}>
+    No likes yet.
+  </p>
+)}
+                {/* ✅ Display comment count and likes */}
                 <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
                 <button onClick={() => navigate(`/comments/${post._id}`)} className="btn btn-dark">({post.commentCount || 0}) Comments</button> {/* ✅ Navigate to comments page */}
                   <button className="btn btn-dark" onClick={() => handleToggleLike(post._id)} >👍 {post.likes} Likes</button>
