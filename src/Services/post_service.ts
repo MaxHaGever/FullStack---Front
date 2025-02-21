@@ -37,6 +37,22 @@ const createPost = async (postData: FormData) => {
   });
 };
 
+const updatePostWithImage = async (postId: string, formData: FormData) => {
+  const token = localStorage.getItem("accessToken");
+
+  if (!token) {
+    return Promise.reject(new Error("Unauthorized: No token found."));
+  }
+
+  return apiClient.put(`/posts/${postId}`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data", 
+    },
+  });
+};
+
+
 
 const getMyPosts = async () => {
   const userId = localStorage.getItem("userId"); // ✅ Get userId from localStorage
@@ -97,8 +113,19 @@ const updatePost = async (postId: string, updatedData: { title?: string; content
 
 // Delete post
 const deletePost = (postId: string) => {
-    return apiClient.delete(`/posts/${postId}`);
+  const token = localStorage.getItem("accessToken"); // ✅ Get token from storage
+  if (!token) {
+      return Promise.reject(new Error("No auth token found"));
+  }
+
+  return apiClient.delete(`/posts/${postId}`, {
+      headers: {
+          Authorization: `Bearer ${token}`, // ✅ Send auth token
+      },
+  });
 };
+
+
 
 export default {
     createPost,
@@ -109,4 +136,5 @@ export default {
     updatePost,
     deletePost,
     getMyPosts,
+    updatePostWithImage
 };

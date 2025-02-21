@@ -31,6 +31,7 @@ const ProfilePage = () => {
   const [newPassword, setNewPassword] = useState("");
   const [selectedAvatar, setSelectedAvatar] = useState<File | null>(null);
   const [error, setError] = useState<string>("");
+  const [selectedPostImage, setSelectedPostImage] = useState<File | null>(null);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -101,32 +102,73 @@ const ProfilePage = () => {
 
   const handleEditPost = (postId: string, title: string, content: string) => {
     setEditingPost({ id: postId, title, content });
+    setSelectedPostImage(null);
   };
+
+  const handleDeletePost = async (postId: string) => {
+    if (!window.confirm("Are you sure you want to delete this post? This action cannot be undone.")) {
+        return;
+    }
+
+    try {
+        await postService.deletePost(postId);
+        setMyPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
+        alert("Post deleted successfully!");
+    } catch (error) {
+        console.error("❌ Failed to delete post:", error);
+        alert("Failed to delete post.");
+    }
+};
+
 
   const handleUpdatePost = async () => {
     if (!editingPost) return;
 
     try {
-      console.log(`📤 Updating Post: ${editingPost.id}`); // ✅ Debugging
+      console.log(`📤 Sending update request for Post ID: ${editingPost.id}`);
 
-      await postService.updatePost(editingPost.id, {
-        title: editingPost.title,
-        content: editingPost.content,
-      });
+      const formData = new FormData();
+      formData.append("title", editingPost.title);
+      formData.append("content", editingPost.content);
+
+      if (selectedPostImage) {
+        formData.append("image", selectedPostImage);
+      }
+
+      console.log("📤 Form Data Sent:", Object.fromEntries(formData.entries())); // ✅ Debugging
+
+      const response = await postService.updatePostWithImage(editingPost.id, formData);
+
+      if (!response || !response.data) {
+        throw new Error("No response from server");
+      }
+
+      console.log(`✅ Post updated in backend:`, response.data);
 
       setMyPosts((prevPosts) =>
         prevPosts.map((post) =>
-          post._id === editingPost.id ? { ...post, title: editingPost.title, content: editingPost.content } : post
+          post._id === editingPost.id
+            ? {
+                ...post,
+                title: response.data.title,
+                content: response.data.content,
+                image: response.data.image || post.image,
+              }
+            : post
         )
       );
 
-      setEditingPost(null); // ✅ Exit edit mode
-      alert("Post updated successfully!"); // ✅ Show success message
+      setEditingPost(null);
+      setSelectedPostImage(null);
+      alert("Post updated successfully!");
     } catch (error) {
-      console.error("❌ Failed to update post:", error);
+      console.error("❌ Backend failed to update post:", error);
       alert("Failed to update post.");
     }
 };
+
+
+
 
 
   
@@ -225,61 +267,54 @@ const ProfilePage = () => {
       <div>
       <h2>My Reviews</h2>
         {error && <p className="text-danger">{error}</p>}
-
-        {/* Display User's Reviews */}
-        {myPosts.length === 0 ? (
-          <p>No posts created yet.</p>
-        ) : (
-          myPosts.map((post) => (
-            <div key={post._id} className="post-card" style={{ backgroundColor: "#fff", padding: "10px", borderRadius: "5px", marginBottom: "10px" }}>
-              {editingPost && editingPost.id === post._id ? (
-                <>
-                  <input
-                    type="text"
-                    value={editingPost.title}
-                    onChange={(e) => setEditingPost({ ...editingPost, title: e.target.value })}
-                    className="form-control"
-                  />
-                  <textarea
-                    value={editingPost.content}
-                    onChange={(e) => setEditingPost({ ...editingPost, content: e.target.value })}
-                    className="form-control"
-                    rows={3}
-                  />
-                  <button onClick={handleUpdatePost} className="btn btn-success" style={{ marginTop: "5px" }}>
-                    Save
-                  </button>
-                  <button onClick={() => setEditingPost(null)} className="btn btn-secondary" style={{ marginTop: "5px", marginLeft: "5px" }}>
-                    Cancel
-                  </button>
-                </>
-              ) : (
-                <>
-                  <h3>{post.title}</h3>
-                  <p>{post.content}</p>
-                  {post.image && (
-                <img
-                  src={`http://localhost:3004${post.image}`} 
-                  alt="Post"
-                  style={{ width: "100%", maxHeight: "200px", objectFit: "cover", borderRadius: "5px" }}
-                  onError={(e) => {
-                    console.error(`❌ Failed to load image for post ${post._id}:`, e);
-                    (e.target as HTMLImageElement).style.display = "none";
-                  }}
+        {myPosts.map((post) => (
+          <div key={post._id} className="post-card" style={{ backgroundColor: "#fff", padding: "10px", borderRadius: "5px", marginBottom: "10px" }}>
+            {editingPost && editingPost.id === post._id ? (
+              <>
+                <input
+                  type="text"
+                  value={editingPost.title}
+                  onChange={(e) => setEditingPost({ ...editingPost, title: e.target.value })}
+                  className="form-control"
                 />
-              )}
-                  <button
-                    onClick={() => handleEditPost(post._id, post.title, post.content)}
-                    className="btn btn-dark"
-                    style={{ marginTop: "5px" }}
-                  >
-                    Edit Post
-                  </button>
-                </>
-              )}
-            </div>
-          ))
-        )}
+                <textarea
+                  value={editingPost.content}
+                  onChange={(e) => setEditingPost({ ...editingPost, content: e.target.value })}
+                  className="form-control"
+                  rows={3}
+                />
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={(e) => setSelectedPostImage(e.target.files?.[0] || null)} 
+                  className="form-control"
+                />
+                <button onClick={handleUpdatePost} className="btn btn-success" style={{ marginTop: "5px" }}>
+                  Save
+                </button>
+                <button onClick={() => setEditingPost(null)} className="btn btn-secondary" style={{ marginTop: "5px", marginLeft: "5px" }}>
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <>
+                <h3>{post.title}</h3>
+                <p>{post.content}</p>
+                {post.image && <img src={`http://localhost:3004${post.image}`} alt="Post" style={{ width: "100%", maxHeight: "200px" }} />}
+                <button onClick={() => handleEditPost(post._id, post.title, post.content)} className="btn btn-dark" style={{ marginTop: "5px" }}>
+                  Edit Post
+                </button>
+                <button
+  onClick={() => handleDeletePost(post._id)}
+  className="btn btn-danger"
+  style={{ marginTop: "5px" }}
+>
+  Delete Post
+</button>
+              </>
+            )}
+          </div>
+        ))}
       </div>
       </div>
   );
