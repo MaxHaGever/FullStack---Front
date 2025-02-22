@@ -13,8 +13,6 @@ const PostAPost: React.FC<PostAPostProps> = ({ isLoggedIn }) => {
   const [image, setImage] = useState<File | null>(null);
   const [error, setError] = useState("");
 
-
-  // Redirect if the user is not logged in
   if (!isLoggedIn) {
     navigate("/login");
     return null;
@@ -22,7 +20,7 @@ const PostAPost: React.FC<PostAPostProps> = ({ isLoggedIn }) => {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setImage(e.target.files[0]); // Store selected file
+      setImage(e.target.files[0]);
     }
   };
 
@@ -30,35 +28,32 @@ const PostAPost: React.FC<PostAPostProps> = ({ isLoggedIn }) => {
     e.preventDefault();
 
     if (!title || !content) {
-        setError("Title and content are required.");
-        return;
+      setError("Title and content are required.");
+      return;
     }
 
-    const username = localStorage.getItem("username"); // Retrieve username from localStorage
+    const username = localStorage.getItem("username");
 
     if (!username) {
-        console.error("❌ Missing username in localStorage");
-        setError("Error: Unable to retrieve username.");
-        return;
+      setError("Error: Unable to retrieve username.");
+      return;
     }
 
     const postData = new FormData();
     postData.append("title", title);
     postData.append("content", content);
-    postData.append("username", username); // Add username to the post data
+    postData.append("username", username);
     if (image) {
-        postData.append("image", image);
+      postData.append("image", image);
     }
-
-    console.log("📤 Sending Post Data:", Object.fromEntries(postData.entries())); // Debugging
 
     try {
-        await postService.createPost(postData);
-        navigate("/view-posts"); // Redirect to the View Posts page instead of Profile
+      await postService.createPost(postData);
+      navigate("/view-posts");
     } catch {
-        setError("Failed to create post. Please try again.");
+      setError("Failed to create post. Please try again.");
     }
-};
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -68,7 +63,6 @@ const PostAPost: React.FC<PostAPostProps> = ({ isLoggedIn }) => {
       >
         <h1 className="text-2xl font-bold text-center mb-6">Create a Post</h1>
 
-        {/* Post Title Field */}
         <div className="mb-4">
           <label className="block text-gray-700">Post Title:</label>
           <input
@@ -81,7 +75,6 @@ const PostAPost: React.FC<PostAPostProps> = ({ isLoggedIn }) => {
           />
         </div>
 
-        {/* Content Field */}
         <div className="mb-4">
           <label className="block text-gray-700">Content:</label>
           <textarea
@@ -94,7 +87,6 @@ const PostAPost: React.FC<PostAPostProps> = ({ isLoggedIn }) => {
           ></textarea>
         </div>
 
-        {/* Image Upload Field */}
         <div className="mb-4">
           <label className="block text-gray-700">Post Image (optional):</label>
           <input
@@ -106,10 +98,8 @@ const PostAPost: React.FC<PostAPostProps> = ({ isLoggedIn }) => {
           />
         </div>
 
-        {/* Error Message */}
         {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
 
-        {/* Submit Button */}
         <button 
           type="submit" 
           className="w-full mt-6 bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition"

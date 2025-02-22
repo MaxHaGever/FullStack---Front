@@ -6,12 +6,11 @@ import { faImage } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from "react-router-dom";
 import postService from "../Services/post_service";
 
-// Helper function to fix avatar URL
 const fixAvatarUrl = (url: string | undefined): string => {
   if (url && url.startsWith("http://localhost:3004uploads/")) {
-    return url.replace("http://localhost:3004uploads/", "http://localhost:3004/uploads/"); // Fix URL
+    return url.replace("http://localhost:3004uploads/", "http://localhost:3004/uploads/"); 
   }
-  return url || "https://via.placeholder.com/150"; // Default placeholder
+  return url || "https://via.placeholder.com/150"; 
 };
 
 const ProfilePage = () => {
@@ -41,7 +40,7 @@ const ProfilePage = () => {
         setNewUsername(response.data.username);
         setNewEmail(response.data.email);
       } catch (error) {
-        console.error("❌ Error fetching user profile:", error);
+        console.error(error);
       }
     };
     const fetchMyPosts = async () => {
@@ -50,7 +49,7 @@ const ProfilePage = () => {
         setMyPosts(response.data);
       } catch (error) {
         setError("Failed to load your posts.");
-        console.error("❌ Error fetching my posts:", error);
+        console.error(error);
       }
     };
     fetchMyPosts();
@@ -58,7 +57,7 @@ const ProfilePage = () => {
   }, []);
 
   const handlePostAPost = () => {
-    navigate("/post-a-post"); // Ensure this is the correct route
+    navigate("/post-a-post"); 
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,13 +76,12 @@ const ProfilePage = () => {
       }
 
       if (!user._id) {
-        console.error("❌ Error: User ID is missing!");
-        alert("Error: Unable to update profile.");
+        console.error("Error: User ID is missing!");
         return;
       }
 
       const updatedData = {
-        userId: user._id, // Ensure userId is included
+        userId: user._id,
         username: newUsername,
         email: newEmail,
         password: newPassword || undefined,
@@ -93,7 +91,7 @@ const ProfilePage = () => {
       await userService.updateProfile(updatedData);
       alert("Profile updated successfully!");
     } catch (error) {
-      console.error("❌ Error updating profile:", error);
+      console.error(error);
       alert("Failed to update profile.");
     }
   };
@@ -104,17 +102,12 @@ const ProfilePage = () => {
   };
 
   const handleDeletePost = async (postId: string) => {
-    if (!window.confirm("Are you sure you want to delete this post? This action cannot be undone.")) {
-      return;
-    }
 
     try {
       await postService.deletePost(postId);
       setMyPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
-      alert("Post deleted successfully!");
     } catch (error) {
-      console.error("❌ Failed to delete post:", error);
-      alert("Failed to delete post.");
+      console.error(error);
     }
   };
 
@@ -153,16 +146,14 @@ const ProfilePage = () => {
       setSelectedPostImage(null);
       alert("Post updated successfully!");
     } catch (error) {
-      console.error("❌ Backend failed to update post:", error);
+      console.error(error);
       alert("Failed to update post.");
     }
   };
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-100 py-8">
-      {/* Container for both sections */}
       <div className="w-full flex flex-col items-center">
-        {/* Profile Section */}
         <form
           onSubmit={(e) => e.preventDefault()}
           className="w-full max-w-md bg-white shadow-lg rounded-lg p-6 mb-8"
@@ -170,7 +161,6 @@ const ProfilePage = () => {
           <h1 className="text-2xl font-bold text-center mb-6">Profile</h1>
   
           <div className="flex flex-col items-center mb-4">
-  {/* Avatar */}
   <img
     src={fixAvatarUrl(user.avatar)}
     alt="User Avatar"
@@ -178,7 +168,6 @@ const ProfilePage = () => {
   />
   <input ref={inputFile} type="file" onChange={handleFileChange} className="hidden" />
 
-  {/* Centered Upload Icon */}
   <FontAwesomeIcon
     icon={faImage}
     size="2x"
@@ -188,7 +177,6 @@ const ProfilePage = () => {
 </div>
 
   
-          {/* Username */}
           <div className="mb-4">
             <label htmlFor="username" className="block text-gray-700">Username:</label>
             <input
@@ -200,7 +188,7 @@ const ProfilePage = () => {
             />
           </div>
   
-          {/* Email */}
+
           <div className="mb-4">
             <label htmlFor="email" className="block text-gray-700">Email:</label>
             <input
@@ -212,7 +200,6 @@ const ProfilePage = () => {
             />
           </div>
   
-          {/* Password */}
           <div className="mb-4">
             <label htmlFor="password" className="block text-gray-700">New Password:</label>
             <input
@@ -224,7 +211,6 @@ const ProfilePage = () => {
             />
           </div>
   
-          {/* Update Button */}
           <div className="text-center">
             <button
               onClick={handleUpdateProfile}
@@ -233,8 +219,7 @@ const ProfilePage = () => {
               Update Profile
             </button>
           </div>
-  
-          {/* Post a Review Button */}
+
           <div className="mt-4">
             <button
               onClick={handlePostAPost}
@@ -244,8 +229,6 @@ const ProfilePage = () => {
             </button>
           </div>
         </form>
-  
-        {/* My Reviews Section (Now Below Profile Section) */}
         <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-6">
           <h2 className="text-xl font-bold text-center mb-6">My Reviews</h2>
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
@@ -286,7 +269,6 @@ const ProfilePage = () => {
                 </>
               ) : (
                 <>
-                  {/* Centered Review Title & Content */}
                   <h3 className="text-lg font-semibold text-center">{post.title}</h3>
                   <p className="text-center">{post.content}</p>
                   {post.image && (
@@ -296,8 +278,6 @@ const ProfilePage = () => {
                       className="mt-2 max-w-full h-auto mx-auto"
                     />
                   )}
-  
-                  {/* Stacked Edit & Delete Buttons */}
                   <div className="mt-4 flex flex-col space-y-2">
                     <button
                       onClick={() => handleEditPost(post._id, post.title, post.content)}

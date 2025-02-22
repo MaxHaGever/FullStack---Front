@@ -23,9 +23,8 @@ const ViewPosts: React.FC = () => {
       try {
         const response = await postService.getAllPosts();
         setPosts(response.data);
-      } catch (err) {
+      } catch {
         setError("Failed to load posts.");
-        console.error("❌ Error fetching posts:", err);
       }
     };
     fetchPosts();
@@ -34,11 +33,11 @@ const ViewPosts: React.FC = () => {
   const handleToggleLike = async (postId: string) => {
     try {
       const response = await postService.toggleLike(postId);
-      setPosts(posts.map(post =>
+      setPosts(posts.map(post => 
         post._id === postId ? { ...post, likes: response.data.likes } : post
       ));
-    } catch (err) {
-      console.error("❌ Error toggling like:", err);
+    } catch {
+      alert("Failed to toggle like.");
     }
   };
 
@@ -60,7 +59,6 @@ const ViewPosts: React.FC = () => {
                 key={post._id}
                 className="bg-white shadow-lg rounded-xl p-6 flex flex-col items-center text-center border border-gray-200"
               >
-                {/* 📌 Image at the top, centered */}
                 {imageUrl && (
                   <img
                     src={imageUrl}
@@ -72,40 +70,32 @@ const ViewPosts: React.FC = () => {
                   />
                 )}
 
-
-                {/* 📌 Post Title */}
                 <h2 className="text-2xl font-semibold text-gray-900">{post.title}</h2>
-
-                {/* 📌 Post Content */}
                 <p className="text-gray-700 text-md mt-3 leading-relaxed">{post.content}</p>
-
-                {/* 📌 Username */}
                 <p className="text-gray-500 italic mt-3">
                   By: <span className="font-medium text-gray-800">{post.senderUsername || "Unknown User"}</span>
                 </p>
 
-                {/* 📌 Likes Section */}
                 {Array.isArray(post.likedUsernames) && post.likedUsernames.length > 0 ? (
                   <p className="text-sm text-gray-600 mt-2">
-                    ❤️ Liked by: {post.likedUsernames.join(", ")}
+                    Liked by: {post.likedUsernames.join(", ")}
                   </p>
                 ) : (
                   <p className="text-sm text-gray-500 mt-2">No likes yet.</p>
                 )}
 
-                {/* 📌 Buttons for Comments & Likes */}
                 <div className="flex justify-center gap-4 mt-5">
                   <button
                     onClick={() => navigate(`/comments/${post._id}`)}
-                    className="px-5 py-2 bg-gray-800 text-white font-medium rounded-lg hover:bg-gray-900 transition flex items-center gap-2"
+                    className="px-5 py-2 bg-gray-800 text-white font-medium rounded-lg hover:bg-gray-900 transition"
                   >
-                    💬 {post.commentCount || 0} Comments
+                    {post.commentCount || 0} Comments
                   </button>
                   <button
-                    className="px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+                    className="px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
                     onClick={() => handleToggleLike(post._id)}
                   >
-                    👍 {post.likes} Likes
+                    {post.likes} Likes
                   </button>
                 </div>
               </div>

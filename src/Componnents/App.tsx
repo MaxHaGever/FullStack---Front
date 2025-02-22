@@ -29,9 +29,8 @@ const App: React.FC = () => {
         const response = await userService.getUserProfile();
         setIsLoggedIn(true);
         setUsername(response.data.username);
-        console.log("✅ Fetched user:", response.data.username);
       } catch (error) {
-        console.error("❌ Failed to fetch user data", error);
+        console.error(error);
         setIsLoggedIn(false);
       } finally {
         setLoading(false);
@@ -52,8 +51,6 @@ const App: React.FC = () => {
   return (
     <Router>
       <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} username={username} />
-      
-      {/* FIX: Now Components Are Not Force-Centered */}
       <div className="bg-gray-100 min-h-screen px-6 py-12">
         <Routes>
           <Route path="/" element={isLoggedIn ? <Navigate to="/profile" /> : <HomePage />} />
@@ -63,7 +60,7 @@ const App: React.FC = () => {
           <Route path="/view-posts" element={<ViewPosts />} />
           <Route path="/post-a-post" element={<PostAPost isLoggedIn={isLoggedIn} />} />
           <Route path="/comments/:postId" element={<ViewComments />} />
-          <Route path="/chatgpt" element={<ChatGPT />} />
+          <Route path="/chat" element={<ChatGPT />} />
         </Routes>
       </div>
     </Router>

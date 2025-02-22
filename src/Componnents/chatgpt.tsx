@@ -31,7 +31,6 @@ const ChatGPT: React.FC = () => {
       <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-6">
         <h1 className="text-2xl font-bold text-center mb-6">Chat with AI</h1>
 
-        {/* Chat Input */}
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}

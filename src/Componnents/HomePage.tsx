@@ -7,11 +7,7 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      
-      {/* Logo */}
       <img src={BookHook} alt="BookHook Logo" className="w-80 h-60 mb-8" />
-
-      {/* Buttons */}
       <div className="flex space-x-6">
         <button 
           onClick={() => navigate("/login")} 
@@ -26,7 +22,6 @@ const HomePage: React.FC = () => {
           Register
         </button>
       </div>
-
     </div>
   );
 };

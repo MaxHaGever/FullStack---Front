@@ -10,9 +10,7 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ isLoggedIn, setIsLoggedIn, username }) => {
   const navigate = useNavigate();
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // Mobile menu toggle
-
-  console.log("🟢 Navbar Rendered | isLoggedIn:", isLoggedIn, "| Username:", username);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
@@ -26,13 +24,10 @@ const Navbar: React.FC<NavbarProps> = ({ isLoggedIn, setIsLoggedIn, username }) 
     <nav className="bg-gray-900 text-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
-          
-          {/* 🔥 Logo Section (No Text) */}
           <Link to="/" className="flex items-center">
             <img src={BookHookLogo} alt="Book Hook Logo" className="h-12 invert" />
           </Link>
 
-          {/* 🔥 Mobile Menu Toggle */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="lg:hidden text-white focus:outline-none"
@@ -52,17 +47,13 @@ const Navbar: React.FC<NavbarProps> = ({ isLoggedIn, setIsLoggedIn, username }) 
             </svg>
           </button>
 
-          {/* 🔥 Desktop Menu */}
-          
           <div className="hidden lg:flex space-x-6">
             {isLoggedIn ? (
               <>
-                <span className="text-gray-300 font-medium mt-2">
-                  Welcome, {username || "User"}!
-                </span>
+                <span className="text-gray-300 font-medium mt-2">Welcome, {username || "User"}!</span>
                 <Link to="/chatgpt" className="px-4 py-2 bg-green-600 hover:bg-green-500 rounded-lg transition">
-  Chat with AI
-</Link>
+                  Chat with AI
+                </Link>
                 <button
                   onClick={() => navigate("/view-posts")}
                   className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition"
@@ -90,14 +81,11 @@ const Navbar: React.FC<NavbarProps> = ({ isLoggedIn, setIsLoggedIn, username }) 
           </div>
         </div>
 
-        {/* 🔥 Mobile Menu (Collapsible) */}
         {isMenuOpen && (
           <div className="lg:hidden flex flex-col space-y-3 py-3 border-t border-gray-700">
             {isLoggedIn ? (
               <>
-                <span className="text-gray-300 text-center font-medium">
-                  Welcome, {username || "User"}!
-                </span>
+                <span className="text-gray-300 text-center font-medium">Welcome, {username || "User"}!</span>
                 <button
                   onClick={() => navigate("/view-posts")}
                   className="block text-center px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition"

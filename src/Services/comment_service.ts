@@ -1,4 +1,4 @@
-import apiClient from "./api-client"; // ✅ Import API client
+import apiClient from "./api-client"; 
 
 const getCommentsByPost = (postId: string) => {
     return apiClient.get(`/comments/post/${postId}`);
@@ -11,8 +11,8 @@ const getCommentsByPost = (postId: string) => {
       { postId, text },
       {
         headers: {
-          Authorization: `Bearer ${token}`, // ✅ Send token for authentication
-          "Content-Type": "application/json", // ✅ Ensure JSON format
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json", 
         },
       }
     );
@@ -20,7 +20,7 @@ const getCommentsByPost = (postId: string) => {
   
 
 const deleteComment = (commentId: string) => {
-  const token = localStorage.getItem("accessToken"); // ✅ Get auth token
+  const token = localStorage.getItem("accessToken"); 
   if (!token) {
     throw new Error("Unauthorized: No token found");
   }
