@@ -60,7 +60,7 @@ const App: React.FC = () => {
           <Route path="/view-posts" element={<ViewPosts />} />
           <Route path="/post-a-post" element={<PostAPost isLoggedIn={isLoggedIn} />} />
           <Route path="/comments/:postId" element={<ViewComments />} />
-          <Route path="/chat" element={<ChatGPT />} />
+          <Route path="/chatgpt" element={<ChatGPT />} />
         </Routes>
       </div>
     </Router>
