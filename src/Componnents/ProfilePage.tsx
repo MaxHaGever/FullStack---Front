@@ -23,6 +23,7 @@ const ProfilePage = () => {
   });
 
   const navigate = useNavigate();
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [myPosts, setMyPosts] = useState<{ _id: string; title: string; content: string; image?: string }[]>([]);
   const [editingPost, setEditingPost] = useState<{ id: string; title: string; content: string } | null>(null);
   const [newUsername, setNewUsername] = useState("");
@@ -89,10 +90,11 @@ const ProfilePage = () => {
       };
 
       await userService.updateProfile(updatedData);
-      alert("Profile updated successfully!");
+      setSuccessMessage("Profile updated successfully!");
+      setTimeout(() => setSuccessMessage(null), 3000);
     } catch (error) {
       console.error(error);
-      alert("Failed to update profile.");
+      setError("Failed to update profile.");
     }
   };
 
@@ -113,41 +115,37 @@ const ProfilePage = () => {
 
   const handleUpdatePost = async () => {
     if (!editingPost) return;
-
+  
     try {
       const formData = new FormData();
       formData.append("title", editingPost.title);
       formData.append("content", editingPost.content);
-
+  
       if (selectedPostImage) {
         formData.append("image", selectedPostImage);
       }
-
+  
       const response = await postService.updatePostWithImage(editingPost.id, formData);
-
+  
       if (!response || !response.data) {
         throw new Error("No response from server");
       }
-
+  
       setMyPosts((prevPosts) =>
         prevPosts.map((post) =>
           post._id === editingPost.id
-            ? {
-                ...post,
-                title: response.data.title,
-                content: response.data.content,
-                image: response.data.image || post.image,
-              }
+            ? { ...post, title: response.data.title, content: response.data.content, image: response.data.image || post.image }
             : post
         )
       );
-
+  
       setEditingPost(null);
       setSelectedPostImage(null);
-      alert("Post updated successfully!");
+      
+      setSuccessMessage("Post updated successfully!"); // ✅ Set message
+      setTimeout(() => setSuccessMessage(null), 3000); // ✅ Hide after 3s
     } catch (error) {
       console.error(error);
-      alert("Failed to update post.");
     }
   };
 
@@ -158,6 +156,7 @@ const ProfilePage = () => {
           onSubmit={(e) => e.preventDefault()}
           className="w-full max-w-md bg-white shadow-lg rounded-lg p-6 mb-8"
         >
+          
           <h1 className="text-2xl font-bold text-center mb-6">Profile</h1>
   
           <div className="flex flex-col items-center mb-4">
@@ -175,6 +174,11 @@ const ProfilePage = () => {
     className="text-gray-500 cursor-pointer hover:text-gray-700 transition mt-2"
   />
 </div>
+{successMessage && (
+  <div className="mb-4 px-4 py-2 bg-green-200 text-green-800 rounded-md text-center transition-opacity duration-500">
+    {successMessage}
+  </div>
+)}
 
   
           <div className="mb-4">
