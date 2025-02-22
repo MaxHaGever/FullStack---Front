@@ -16,7 +16,12 @@ const UserSchema = z.object({
 
 type FormData = z.infer<typeof UserSchema>;
 
-const UserForm: FC = () => {
+interface UserFormProps {
+  setIsLoggedIn: (loggedIn: boolean) => void; // ✅ Accept setIsLoggedIn prop
+}
+
+const UserForm: FC<UserFormProps> = ({ setIsLoggedIn }) => {
+
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const inputFile = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -34,32 +39,42 @@ const UserForm: FC = () => {
       const userPayload = { username: data.name, password: data.password, email: data.email };
       const registerResponse = await userService.register(userPayload);
       const userId = registerResponse.data._id ?? "";
-
+  
       if (!userId) {
         alert("Registration successful, but user ID is missing.");
         return;
       }
+  
+      // ✅ Log the user in immediately after registration
       const loginResponse = await userService.login({ email: data.email, password: data.password });
-
+  
       if (!loginResponse.data.accessToken) {
         alert("Login failed after registration.");
         return;
       }
-
+  
+      // ✅ Store login details in localStorage
       localStorage.setItem("accessToken", loginResponse.data.accessToken);
       localStorage.setItem("userId", userId);
       localStorage.setItem("username", registerResponse.data.username);
-
+  
+      // ✅ Update navbar state immediately
+      setIsLoggedIn(true); 
+      window.dispatchEvent(new Event("storage")); // ✅ Notify navbar about login
+  
+      // ✅ Upload profile image if selected
       if (selectedImage) {
         const uploadResponse = await userService.uploadImage(selectedImage);
         await userService.updateProfile({ userId, avatar: uploadResponse.data.url });
       }
-
+  
+      // ✅ Navigate to profile page
       navigate(`/profile`);
     } catch {
       alert("Registration failed. Please try again.");
     }
   };
+  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">

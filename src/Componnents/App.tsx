@@ -54,7 +54,7 @@ const App: React.FC = () => {
       <div className="bg-gray-100 min-h-screen px-6 py-12">
         <Routes>
           <Route path="/" element={isLoggedIn ? <Navigate to="/profile" /> : <HomePage />} />
-          <Route path="/register" element={<RegistrationForm />} />
+          <Route path="/register" element={<RegistrationForm setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/view-posts" element={<ViewPosts />} />
