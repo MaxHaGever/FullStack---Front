@@ -70,17 +70,19 @@ const ProfilePage = () => {
   const handleUpdateProfile = async () => {
     try {
       let avatarUrl = user.avatar;
-
+  
       if (selectedAvatar) {
         const uploadResponse = await userService.uploadImage(selectedAvatar);
         avatarUrl = uploadResponse.data.url;
+  
+        setUser((prevUser) => ({
+          ...prevUser,
+          avatar: avatarUrl, 
+        }));
       }
-
-      if (!user._id) {
-        console.error("Error: User ID is missing!");
-        return;
-      }
-
+  
+      if (!user._id) return;
+  
       const updatedData = {
         userId: user._id,
         username: newUsername,
@@ -88,15 +90,19 @@ const ProfilePage = () => {
         password: newPassword || undefined,
         avatar: avatarUrl,
       };
-
+  
       await userService.updateProfile(updatedData);
+  
       setSuccessMessage("Profile updated successfully!");
       setTimeout(() => setSuccessMessage(null), 3000);
+  
+      setSelectedAvatar(null); 
+  
     } catch (error) {
       console.error(error);
-      setError("Failed to update profile.");
     }
   };
+  
 
   const handleEditPost = (postId: string, title: string, content: string) => {
     setEditingPost({ id: postId, title, content });
