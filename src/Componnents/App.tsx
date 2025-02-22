@@ -9,6 +9,7 @@ import ViewPosts from "./ViewPosts";
 import userService from "../Services/user_service";
 import PostAPost from "./PostAPost";
 import ViewComments from "./ViewComments";
+import ChatGPT from "./chatgpt";
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -62,6 +63,7 @@ const App: React.FC = () => {
           <Route path="/view-posts" element={<ViewPosts />} />
           <Route path="/post-a-post" element={<PostAPost isLoggedIn={isLoggedIn} />} />
           <Route path="/comments/:postId" element={<ViewComments />} />
+          <Route path="/chatgpt" element={<ChatGPT />} />
         </Routes>
       </div>
     </Router>

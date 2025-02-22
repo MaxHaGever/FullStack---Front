@@ -53,12 +53,16 @@ const Navbar: React.FC<NavbarProps> = ({ isLoggedIn, setIsLoggedIn, username }) 
           </button>
 
           {/* 🔥 Desktop Menu */}
+          
           <div className="hidden lg:flex space-x-6">
             {isLoggedIn ? (
               <>
                 <span className="text-gray-300 font-medium mt-2">
                   Welcome, {username || "User"}!
                 </span>
+                <Link to="/chatgpt" className="px-4 py-2 bg-green-600 hover:bg-green-500 rounded-lg transition">
+  Chat with AI
+</Link>
                 <button
                   onClick={() => navigate("/view-posts")}
                   className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition"
