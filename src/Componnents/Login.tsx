@@ -46,8 +46,8 @@ const Login: FC<{ setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>> }
       localStorage.setItem("refreshToken", res.data.refreshToken);
       localStorage.setItem("userId", res.data._id);
 
-      alert("Google Login Successful!");
-      navigate(`/profile/${res.data._id}`);
+      setIsLoggedIn(true);
+      navigate("/profile");
     } catch {
       alert("Google login failed, please try again.");
     }
