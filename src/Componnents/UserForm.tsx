@@ -6,6 +6,7 @@ import pngegg from "../assets/pngegg.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 import userService from "../Services/user_service";
+import { CredentialResponse, GoogleLogin,} from "@react-oauth/google";
 
 // ✅ Validation Schema
 const UserSchema = z.object({
@@ -46,7 +47,6 @@ const UserForm: FC = () => {
       const userId = registerResponse.data._id ?? "";
       if (!userId) {
         console.error("❌ Error: User ID is missing!");
-        alert("Registration failed. Please try again.");
         return;
       }
 
@@ -62,12 +62,19 @@ const UserForm: FC = () => {
         await userService.updateProfile({ userId, avatar: imageUrl });
         console.log(`✅ Updated Profile for ${registerResponse.data.username} with avatar: ${imageUrl}`);
       }
-
-      alert("Registration successful!");
     } catch (error) {
       console.error("❌ Registration Error:", error);
-      alert("An unknown error occurred.");
     }
+  };
+
+  const onGoogleLoginSuccess = async (credentialResponse: CredentialResponse) => {
+    console.log("🟢 Google Login Success:", credentialResponse)
+    const res = await userService.registerWithGoogle(credentialResponse);
+    console.log("✅ Register Response:", res.data);
+  };
+
+  const onGoogleLoginFailure = () => {
+    console.error("❌ Google Login Failure:");
   };
 
   return (
@@ -146,6 +153,7 @@ const UserForm: FC = () => {
         >
           Register
         </button>
+        <GoogleLogin onSuccess={onGoogleLoginSuccess} onError={onGoogleLoginFailure} />
       </form>
     </div>
   );

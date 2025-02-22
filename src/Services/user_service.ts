@@ -1,4 +1,6 @@
+import { CredentialResponse } from "@react-oauth/google";
 import apiClient from "./api-client";
+import axios from "axios";
 
 export interface User {
   _id?: string;
@@ -6,11 +8,18 @@ export interface User {
   password?: string;
   email: string;
   avatar?: string;
+  accessToken?: string;
+  refreshToken?: string;
 }
 
 const register = (user: { username: string; password: string; email: string }) => {
   console.log("📤 Sending Register Request:", user);
   return apiClient.post<{ _id: string; email: string; username: string }>("/auth/register", user);
+};
+
+const API_URL = "http://localhost:3004/auth";
+const registerWithGoogle = async (credentialResponse: CredentialResponse) => {
+  return axios.post(`${API_URL}/google`, { token: credentialResponse.credential });
 };
 
 const login = (credentials: { email: string; password: string }) => {
@@ -60,4 +69,4 @@ const getUserById = async (userId: string) => {
 };
 
 
-export default { register, login, getUserProfile, updateProfile, logout , uploadImage, getUserById};
+export default { register, login, getUserProfile, updateProfile, logout , uploadImage, getUserById, registerWithGoogle};
