@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import commentService from "../Services/comment_service";
 
@@ -13,12 +13,13 @@ const ViewComments: React.FC = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [currentUsername, setCurrentUsername] = useState<string | null>(null); 
 
   useEffect(() => {
-    fetchComments();
-  }, [postId]);
+    setCurrentUsername(localStorage.getItem("username"));
+  }, []);
 
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     try {
       if (!postId) {
         setError("Post ID is missing.");
@@ -29,7 +30,11 @@ const ViewComments: React.FC = () => {
     } catch {
       setError("Failed to load comments.");
     }
-  };
+  }, [postId]);
+
+  useEffect(() => {
+    fetchComments();
+  }, [fetchComments]); 
 
   const handleDeleteComment = async (commentId: string) => {
     try {
@@ -45,21 +50,32 @@ const ViewComments: React.FC = () => {
       setError("Comment text is required.");
       return;
     }
-
+  
     const token = localStorage.getItem("accessToken");
+    const username = localStorage.getItem("username"); 
+  
     if (!token) {
       setError("You must be logged in to comment.");
       return;
     }
-
+  
     try {
-      await commentService.addComment(postId, newComment.trim(), token);
+      const response = await commentService.addComment(postId, newComment.trim(), token);
+  
       setNewComment("");
-      fetchComments(); 
+  
+
+      const newCommentData = {
+        ...response.data,
+        sender: { username: username || "Unknown User" }, 
+      };
+  
+      setComments((prev) => [...prev, newCommentData]); 
     } catch {
       setError("Failed to add comment.");
     }
   };
+  
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-gray-100 px-6">
@@ -75,7 +91,7 @@ const ViewComments: React.FC = () => {
             <div key={comment._id} className="bg-gray-100 p-4 rounded-lg mb-3 shadow-sm">
               <p className="font-semibold text-gray-800">{comment.sender?.username || "Unknown User"}</p>
               <p className="text-gray-700">{comment.text}</p>
-              {comment.sender?.username === localStorage.getItem("username") && (
+              {comment.sender?.username === currentUsername && ( 
                 <button
                   onClick={() => handleDeleteComment(comment._id)}
                   className="mt-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
