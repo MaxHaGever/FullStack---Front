@@ -4,6 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import userService from "../Services/user_service";
+import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 
 const LoginSchema = z.object({
   email: z.string().email({ message: "Invalid email" }),
@@ -38,6 +39,34 @@ const Login: FC<{ setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>> }
       console.error("❌ Login failed:", error);
       alert("Login failed. Please check your credentials.");
     }
+  };
+
+const onGoogleLoginSuccess = async (credentialResponse: CredentialResponse) => {
+  console.log("🟢 Google Login Success:", credentialResponse);
+
+  try {
+    // Send the Google token to the backend
+    const res = await userService.registerWithGoogle(credentialResponse);
+
+    console.log("✅ Backend Google Register Response:", res.data);
+
+    // Store the JWT access token from backend
+    localStorage.setItem("accessToken", res.data.accessToken);
+    localStorage.setItem("refreshToken", res.data.refreshToken);
+    localStorage.setItem("userId", res.data._id); // Store user ID for profile retrieval
+
+    alert("🎉 Google Login Successful!");
+
+    // Redirect user to profile page
+    navigate(`/profile/${res.data._id}`);
+  } catch (error) {
+    console.error("❌ Error during Google login:", error);
+    alert("Google login failed, please try again.");
+  }
+};
+
+  const onGoogleLoginFailure = () => {
+    console.error("❌ Google Login Failure:");
   };
 
   return (
@@ -77,6 +106,7 @@ const Login: FC<{ setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>> }
         >
           Log In
         </button>
+        <GoogleLogin onSuccess={onGoogleLoginSuccess} onError={onGoogleLoginFailure} />
       </form>
     </div>
   );
